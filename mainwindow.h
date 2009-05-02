@@ -17,13 +17,12 @@ public:
     ~MainWindow();
 
 private slots:
-//    void calculate_values();
     void choose_color_1();
     void choose_color_2();
 //    void draw();
 //    void generate();
-//    void load();
-//    void save_selection();
+    void load();
+    void save_selection();
 
 private:
     void choose_color();
