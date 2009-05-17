@@ -10,6 +10,8 @@ public:
 
 public:
     void calculate_info(int selectionSize);
+    double calculate_y1(double x, double p);
+    double calculate_y2(double x, double p);
 
     //setters
     void set_vectors(double * vec1, double * vec2);

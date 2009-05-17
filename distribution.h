@@ -8,7 +8,7 @@ public:
     ~Distribution();
 
 public:
-    void generate__a__(int _m);
+    bool generate__a__(int _m);
     void generate_normal_vector(double * vec);
     void generate_vector(double * vec);
     void generate_selection(int _selectionSize);
@@ -23,17 +23,17 @@ public:
         return a;
     }
 
-    inline const double ** get_b() const
+    inline double ** get_b() const
     {
         return b;
     }
 
-    inline double get_selectionSize() const
+    inline double get_selectionSize()
     {
         return selectionSize;
     }
 
-    inline const double ** get_x() const
+    inline double ** get_x() const
     {
         return x;
     }

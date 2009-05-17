@@ -2,6 +2,12 @@
 
 #include <memory.h>
 #include <math.h>
+#include <stdlib.h>
+
+double drand ()
+{
+    return static_cast<double>(rand())/static_cast<double>(RAND_MAX);
+}
 
 Distribution::Distribution()
         :a(NULL), b(NULL), m(0), selectionSize(0),
@@ -94,7 +100,7 @@ void Distribution::generate_normal_vector(double * vec)
 }
 
 // generate random vector with predefined partition law
-void generate_vector(double * vec)
+void Distribution::generate_vector(double * vec)
 {
     if (!vec)
         return;

@@ -33,25 +33,25 @@ void MainWindow::calculate_values()
     int vec1 = ui.component1->value() - 1;
     int vec2 = ui.component2->value() - 1;
 
-    distributionsInfo[0].set_vectors(distributions[distr1][vec1], distributions[distr1][vec2]);
-    distributionsInfo[1].set_vectors(distributions[distr2][vec1], distributions[distr2][vec2]);
+    distributionsInfo[0].set_vectors(distributions[distr1].get_x()[vec1], distributions[distr1].get_x()[vec2]);
+    distributionsInfo[1].set_vectors(distributions[distr2].get_x()[vec1], distributions[distr2].get_x()[vec2]);
 
     distributionsInfo[0].calculate_info(distributions[distr1].get_selectionSize());
     distributionsInfo[1].calculate_info(distributions[distr2].get_selectionSize());
 
-    ui.labelMiddleX->setText(QString("%1").arg(distirbutionsInfo[0].middleX));
-    ui.labelMiddleY->setText(QString("%1").arg(distirbutionsInfo[0].middleY));
-    ui.labelSigmaX->setText(QString("%1").arg(distirbutionsInfo[0].sigmaX));
-    ui.labelSigmaY->setText(QString("%1").arg(distirbutionsInfo[0].sigmaY));
-    ui.labelKxy->setText(QString("%1").arg(distirbutionsInfo[0].kxy));
-    ui.labelR->setText(QString("%1").arg(distirbutionsInfo[0].r));
+    ui.labelMiddleX->setText(QString("%1").arg(distributionsInfo[0].middleX));
+    ui.labelMiddleY->setText(QString("%1").arg(distributionsInfo[0].middleY));
+    ui.labelSigmaX->setText(QString("%1").arg(distributionsInfo[0].sigmaX));
+    ui.labelSigmaY->setText(QString("%1").arg(distributionsInfo[0].sigmaY));
+    ui.labelKxy->setText(QString("%1").arg(distributionsInfo[0].kxy));
+    ui.labelR->setText(QString("%1").arg(distributionsInfo[0].r));
 
-    ui.labelMiddleX_2->setText(QString("%1").arg(distirbutionsInfo[1].middleX));
-    ui.labelMiddleY_2->setText(QString("%1").arg(distirbutionsInfo[1].middleY));
-    ui.labelSigmaX_2->setText(QString("%1").arg(distirbutionsInfo[1].sigmaX));
-    ui.labelSigmaY_2->setText(QString("%1").arg(distirbutionsInfo[1].sigmaY));
-    ui.labelKxy_2->setText(QString("%1").arg(distirbutionsInfo[1].kxy));
-    ui.labelR_2->setText(QString("%1").arg(distirbutionsInfo[1].r));
+    ui.labelMiddleX_2->setText(QString("%1").arg(distributionsInfo[1].middleX));
+    ui.labelMiddleY_2->setText(QString("%1").arg(distributionsInfo[1].middleY));
+    ui.labelSigmaX_2->setText(QString("%1").arg(distributionsInfo[1].sigmaX));
+    ui.labelSigmaY_2->setText(QString("%1").arg(distributionsInfo[1].sigmaY));
+    ui.labelKxy_2->setText(QString("%1").arg(distributionsInfo[1].kxy));
+    ui.labelR_2->setText(QString("%1").arg(distributionsInfo[1].r));
 
 //    draw();
 }
@@ -61,18 +61,20 @@ void MainWindow::choose_color_1()
 {
     //getting color
     QColor color = QColorDialog::getColor();
-    if (color.isValid())
-    {
-        //setting up background brush with a new color
-        ui.distributionColor1->setBackgroundBrush(QBrush(color, Qt::SolidPattern));
+    if (!color.isValid())
+        return;
 
-        //if scene not created, create it
-        if (!ui.distributionColor1->scene())
-            ui.distributionColor1->setScene(new QGraphicsScene(ui.distributionColor1->rect(), this));
+    //setting up background brush with a new color
+    ui.distributionColor1->setBackgroundBrush(QBrush(color, Qt::SolidPattern));
 
-        //show new color
-        ui.distributionColor1->show();
-    }
+    //if scene not created, create it
+    if (!ui.distributionColor1->scene())
+        ui.distributionColor1->setScene(new QGraphicsScene(ui.distributionColor1->rect(), this));
+
+    //set and show new color
+    distributionsInfo[0].color = color;
+    ui.distributionColor1->show();
+
 }
 
 //setup color for the second distribution
@@ -81,17 +83,33 @@ void MainWindow::choose_color_2()
     //getting color
     QColor color = QColorDialog::getColor();
     if (color.isValid())
-    {
-        //setting up background brush with a new color
-        ui.distributionColor2->setBackgroundBrush(QBrush(color, Qt::SolidPattern));
+        return;
 
-        //if scene not created, create it
-        if (!ui.distributionColor2->scene())
-            ui.distributionColor2->setScene(new QGraphicsScene(ui.distributionColor2->rect(), this));
+    //setting up background brush with a new color
+    ui.distributionColor2->setBackgroundBrush(QBrush(color, Qt::SolidPattern));
 
-        //show new color
-        ui.distributionColor2->show();
-    }
+    //if scene not created, create it
+    if (!ui.distributionColor2->scene())
+        ui.distributionColor2->setScene(new QGraphicsScene(ui.distributionColor2->rect(), this));
+
+    //show new color
+    distributionsInfo[1].color = color;
+    ui.distributionColor2->show();
+
+}
+
+void MainWindow::draw()
+{
+}
+
+//generate selection
+void MainWindow::generate()
+{
+    if (!distributions)
+        return;
+
+    selectionSize = ui.selectionDimention->value();
+
 }
 
 //load distributions from file
@@ -109,7 +127,44 @@ void MainWindow::load()
     if (!in.is_open())
         return;
 
-    //TODO: code with loading info about distributions must be here
+    //get number of distributions
+    in >> numberOfDistributions;
+
+    //delete old distributions
+    if (distributions)
+        delete distributions;
+
+    //allocate memory for new distributions
+    distributions = new (Distribution[numberOfDistributions]);
+
+    //get dimention of X
+    in >> m;
+
+    for (int i = 0; i < numberOfDistributions; ++i)
+    {
+        //allocate memory for vector of average values
+        double * a = new (double[m]);
+
+        //load vector of average values
+        for (int j = 0; j < m; ++j)
+            in >> a[j];
+
+        //allocate memory for matrix of correlations
+        double ** b = new (double*[m]);
+        for (int k = 0; k < m; ++k)
+            b[k] = new (double[m]);
+
+        //load matrix of correlations
+        for (int j = 0; j < m; ++j)
+            for (int k = 0; k < m; ++k)
+                in >> b[j][k];
+
+        //set distribution values
+        distributions[i].set_a(a);
+        distributions[i].set_b(b);
+
+        distributions[i].generate__a__(m);
+    }
 
     in.close();
 }
@@ -158,6 +213,9 @@ void MainWindow::setup_connections()
 
     //connect button for saving selection
     connect(ui.buttonSaveSelection, SIGNAL(clicked()), this, SLOT(save_selection()));
+
+    //connect button for generate selection
+    connect(ui.generateButton, SIGNAL(clicked()), this, SLOT(generate()));
 
     //connect button for calculate values
     connect(ui.drawButton, SIGNAL(clicked()), this, SLOT(calculate_values()));

@@ -1,1 +1,13 @@
 This is the pattern recognition lab. work 5
+
+Input file structure:
++-------------+-----+-------------------------------+
+| first line  | int | number of distributions       |
+| second line | int | dimention of X                |
++-------------+-----+-------------------------------+
+repeat (number of distributions) times:
++-------------+-------------------------------------+
+| first line  | empty                               |
+| second line | mXdouble | vector of average values |
+| m lines     | mXdouble | matrix of correlations   |
++-------------+----------+--------------------------+

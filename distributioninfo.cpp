@@ -5,8 +5,8 @@
 
 DistributionInfo::DistributionInfo()
         :x(NULL), y(NULL),
-        kxy(0,0), middleX(0,0), middleY(0,0),
-        sigmaX(0,0), sigmaY(0,0), r(0,0)
+        kxy(0.0), middleX(0.0), middleY(0.0),
+        sigmaX(0.0), sigmaY(0.0), r(0.0)
 {
 }
 
@@ -19,8 +19,8 @@ void DistributionInfo::calculate_info(int selectionSize)
     middleY = 0.0;
     for (int i = 0; i < selectionSize; ++i)
     {
-        middleX += x;
-        middleY += y;
+        middleX += x[i];
+        middleY += y[i];
     }
     middleX /= static_cast<double>(selectionSize);
     middleY /= static_cast<double>(selectionSize);
@@ -30,9 +30,9 @@ void DistributionInfo::calculate_info(int selectionSize)
     kxy = 0.0;
     for (int i = 0; i < selectionSize; ++i)
     {
-        sigmaX += (x - middleX)*(x - middleX);
-        sigmaY += (y - middleY)*(y - middleY);
-        kxy += (x - middleX)*(y - middleY);
+        sigmaX += (x[i] - middleX)*(x[i] - middleX);
+        sigmaY += (y[i] - middleY)*(y[i] - middleY);
+        kxy += (x[i] - middleX)*(y[i] - middleY);
     }
     sigmaX /= selectionSize;
     sigmaY /= selectionSize;

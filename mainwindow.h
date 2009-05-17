@@ -22,8 +22,8 @@ private slots:
     void calculate_values();
     void choose_color_1();
     void choose_color_2();
-//    void draw();
-//    void generate();
+    void draw();
+    void generate();
     void load();
     void save_selection();
 
@@ -37,6 +37,9 @@ private:
     Ui::MainWindowClass ui; //gui
 
     Distribution* distributions;
+    int numberOfDistributions;  //number of distributions
+    int m;              //dimention of X
+    int selectionSize;  //selection size
     DistributionInfo distributionsInfo[2];
 };
 
