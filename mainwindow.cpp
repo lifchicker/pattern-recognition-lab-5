@@ -18,7 +18,7 @@ MainWindow::~MainWindow()
 {
     if (distributions != NULL)
     {
-        delete distributions;
+        delete[] distributions;
         distributions = NULL;
     }
 }
@@ -27,6 +27,9 @@ void MainWindow::calculate_values()
 {
     if (!distributions)
         return;
+
+    if (!selectionGenerated)
+        generate();
 
     int distr1 = ui.distribution1->value() - 1;
     int distr2 = ui.distribution2->value() - 1;
@@ -53,7 +56,7 @@ void MainWindow::calculate_values()
     ui.labelKxy_2->setText(QString("%1").arg(distributionsInfo[1].kxy));
     ui.labelR_2->setText(QString("%1").arg(distributionsInfo[1].r));
 
-//    draw();
+    draw();
 }
 
 //setup color for the first distribution
@@ -82,7 +85,7 @@ void MainWindow::choose_color_2()
 {
     //getting color
     QColor color = QColorDialog::getColor();
-    if (color.isValid())
+    if (!color.isValid())
         return;
 
     //setting up background brush with a new color
@@ -100,6 +103,8 @@ void MainWindow::choose_color_2()
 
 void MainWindow::draw()
 {
+    if (!selectionGenerated)
+        return;
 }
 
 //generate selection
@@ -110,6 +115,10 @@ void MainWindow::generate()
 
     selectionSize = ui.selectionDimention->value();
 
+    for (int i = 0; i < numberOfDistributions; ++i)
+        distributions[i].generate_selection(selectionSize);
+
+    selectionGenerated = true;
 }
 
 //load distributions from file
@@ -167,6 +176,15 @@ void MainWindow::load()
     }
 
     in.close();
+
+    ui.distribution1->setMaximum(numberOfDistributions);
+    ui.distribution2->setMaximum(numberOfDistributions);
+
+    ui.component1->setMaximum(m);
+    ui.component2->setMaximum(m);
+
+    ui.label_numberOfDistributions->setText(QString("%1").arg(numberOfDistributions));
+    ui.label_m->setText(QString("%1").arg(m));
 }
 
 //get transformed x coordinate

@@ -39,6 +39,7 @@ private:
     Distribution* distributions;
     int numberOfDistributions;  //number of distributions
     int m;              //dimention of X
+    bool selectionGenerated;    //true if selection was generated
     int selectionSize;  //selection size
     DistributionInfo distributionsInfo[2];
 };

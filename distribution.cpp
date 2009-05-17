@@ -19,7 +19,7 @@ Distribution::~Distribution()
 {
     if (a != NULL)
     {
-        delete a;
+        delete[] a;
         a = NULL;
     }
 
@@ -127,13 +127,18 @@ void Distribution::generate_selection(int _selectionSize)
     if (x != NULL)
         delete[] x;
 
-    x = new double*[selectionSize];
+    x = new (double*[m]);
+    for (int i = 0; i < m; ++i)
+        x[i] = new (double[selectionSize]);
 
+    double * tmp_x = new (double[m]);
     for (int i = 0; i < selectionSize; ++i)
     {
-        x[i] = new double[m];
-        generate_vector(x[i]);
+        generate_vector(tmp_x);
+        for (int j = 0; j < m; j++)
+            x[j][i] = tmp_x[j];
     }
+    delete[] tmp_x;
 }
 
 void Distribution::set_a(double * _a)
@@ -142,7 +147,7 @@ void Distribution::set_a(double * _a)
         return;
 
     if (a != NULL)
-        delete a;
+        delete[] a;
 
     a = _a;
 }
