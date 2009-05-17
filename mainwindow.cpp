@@ -101,10 +101,66 @@ void MainWindow::choose_color_2()
 
 }
 
+//drawing function
 void MainWindow::draw()
 {
     if (!selectionGenerated)
         return;
+
+    if (!ui.graphicsView->scene())
+        ui.graphicsView->setScene(new QGraphicsScene(this));
+
+    ui.graphicsView->scene()->clear();
+
+    if (ui.checkBoxDrawReal->isChecked())
+    {
+        //draw info about first distribution
+        draw_distribution(0, ui.graphicsView->scene());
+
+        //draw info about second distribution
+        draw_distribution(1, ui.graphicsView->scene());
+    }
+}
+
+void MainWindow::draw_all_points(int current, QGraphicsScene * scene)
+{
+    QPen pen;
+    pen.setColor(distributionsInfo[current].color);
+    pen.setWidth(2);
+
+    for (int i = 0; i < selectionSize; ++i)
+        scene->addLine(plot_x(distributionsInfo[current].x[i]), plot_y(distributionsInfo[current].y[i]),
+                       plot_x(distributionsInfo[current].x[i]), plot_y(distributionsInfo[current].y[i]), pen);
+}
+
+//drawing all about (current) distribution
+void MainWindow::draw_distribution(int current, QGraphicsScene * scene)
+{
+    if (ui.checkBoxSelection->isChecked())
+        draw_all_points(current, scene);
+
+    if (ui.checkBoxMiddle->isChecked())
+        draw_middle_point(current, scene);
+
+    if (ui.checkBoxIsolines->isChecked())
+        draw_isolines(current, scene);
+}
+
+void MainWindow::draw_isolines(int current, QGraphicsScene * scene)
+{
+    QPen pen;
+    pen.setColor(QColor(0, 0, 255, 255));
+    pen.setWidth(2);
+}
+
+void MainWindow::draw_middle_point(int current, QGraphicsScene * scene)
+{
+    QPen pen;
+    pen.setColor(QColor(0, 0, 255, 255));
+    pen.setWidth(2);
+
+    scene->addLine(plot_x(distributionsInfo[current].middleX), plot_y(distributionsInfo[current].middleY),
+                   plot_x(distributionsInfo[current].middleX), plot_y(distributionsInfo[current].middleY), pen);
 }
 
 //generate selection
@@ -239,4 +295,8 @@ void MainWindow::setup_connections()
     connect(ui.drawButton, SIGNAL(clicked()), this, SLOT(calculate_values()));
     connect(ui.component1, SIGNAL(editingFinished()), this, SLOT(calculate_values()));
     connect(ui.component2, SIGNAL(editingFinished()), this, SLOT(calculate_values()));
+
+    //connect zoom sliders
+    connect(ui.zoomX, SIGNAL(valueChanged(int)), this, SLOT(draw()));
+    connect(ui.zoomY, SIGNAL(valueChanged(int)), this, SLOT(draw()));
 }

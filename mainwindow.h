@@ -9,6 +9,7 @@
 
 class QPainterPath;
 class QRectF;
+class QGraphicsScene;
 
 class MainWindow : public QMainWindow
 {
@@ -29,6 +30,10 @@ private slots:
 
 private:
     void choose_color();
+    void draw_all_points(int current, QGraphicsScene * scene);
+    void draw_distribution(int current, QGraphicsScene * scene);
+    void draw_isolines(int current, QGraphicsScene * scene);
+    void draw_middle_point(int current, QGraphicsScene * scene);
     double plot_x(double x);
     double plot_y(double y);
     void setup_connections();
