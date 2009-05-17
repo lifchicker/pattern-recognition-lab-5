@@ -29,11 +29,13 @@ private slots:
     void save_selection();
 
 private:
+    void calculate_bounding_rect(double * x, double * y, int size);
     void choose_color();
-    void draw_all_points(int current, QGraphicsScene * scene);
-    void draw_distribution(int current, QGraphicsScene * scene);
-    void draw_isolines(int current, QGraphicsScene * scene);
-    void draw_middle_point(int current, QGraphicsScene * scene);
+    void draw_distribution(DistributionInfo * distributionInfo, QGraphicsScene * scene);
+    void draw_ellipse(DistributionInfo * distributionInfo, QPainterPath &path, double p);
+    void draw_isolines(DistributionInfo * distributionInfo, QGraphicsScene * scene);
+    void draw_middle_point(DistributionInfo * distributionInfo, QGraphicsScene * scene);
+    void draw_points(double * x, double * y, int size, QPen & pen, QGraphicsScene * scene);
     double plot_x(double x);
     double plot_y(double y);
     void setup_connections();
@@ -41,6 +43,7 @@ private:
 private:
     Ui::MainWindowClass ui; //gui
 
+    QRectF boundingRect;
     Distribution* distributions;
     int numberOfDistributions;  //number of distributions
     int m;              //dimention of X

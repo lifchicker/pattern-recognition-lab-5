@@ -3,6 +3,9 @@
 
 #include <fstream>
 
+#define likely(x)	__builtin_expect(!!(x), 1)
+#define unlikely(x)	__builtin_expect(!!(x), 0)
+
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
     : QMainWindow(parent, flags),
     distributions(NULL)
@@ -23,6 +26,28 @@ MainWindow::~MainWindow()
     }
 }
 
+void MainWindow::calculate_bounding_rect(double *x, double *y, int size)
+{
+    if (!x || !y || !size)
+        return;
+
+    for (int i = 0; i < size; ++i)
+    {
+        if (x[i] < boundingRect.left())
+            boundingRect.setLeft(x[i]);
+
+        if (x[i] > boundingRect.right())
+            boundingRect.setRight(x[i]);
+
+        if (y[i] < boundingRect.bottom())
+            boundingRect.setBottom(y[i]);
+
+        if (y[i] >  boundingRect.top())
+            boundingRect.setTop(y[i]);
+    }
+
+}
+
 void MainWindow::calculate_values()
 {
     if (!distributions)
@@ -36,9 +61,11 @@ void MainWindow::calculate_values()
     int vec1 = ui.component1->value() - 1;
     int vec2 = ui.component2->value() - 1;
 
+    //set vectors to distribution info
     distributionsInfo[0].set_vectors(distributions[distr1].get_x()[vec1], distributions[distr1].get_x()[vec2]);
     distributionsInfo[1].set_vectors(distributions[distr2].get_x()[vec1], distributions[distr2].get_x()[vec2]);
 
+    //calculate distribution info
     distributionsInfo[0].calculate_info(distributions[distr1].get_selectionSize());
     distributionsInfo[1].calculate_info(distributions[distr2].get_selectionSize());
 
@@ -55,6 +82,12 @@ void MainWindow::calculate_values()
     ui.labelSigmaY_2->setText(QString("%1").arg(distributionsInfo[1].sigmaY));
     ui.labelKxy_2->setText(QString("%1").arg(distributionsInfo[1].kxy));
     ui.labelR_2->setText(QString("%1").arg(distributionsInfo[1].r));
+
+    //calculate new bounding rectangle
+    boundingRect.setTopRight(QPointF(0.0, 0.0));
+    boundingRect.setBottomLeft(QPointF(0.0, 0.0));
+    calculate_bounding_rect(distributionsInfo[0].x, distributionsInfo[0].y, selectionSize);
+    calculate_bounding_rect(distributionsInfo[1].x, distributionsInfo[1].y, selectionSize);
 
     draw();
 }
@@ -77,7 +110,6 @@ void MainWindow::choose_color_1()
     //set and show new color
     distributionsInfo[0].color = color;
     ui.distributionColor1->show();
-
 }
 
 //setup color for the second distribution
@@ -98,7 +130,6 @@ void MainWindow::choose_color_2()
     //show new color
     distributionsInfo[1].color = color;
     ui.distributionColor2->show();
-
 }
 
 //drawing function
@@ -115,52 +146,104 @@ void MainWindow::draw()
     if (ui.checkBoxDrawReal->isChecked())
     {
         //draw info about first distribution
-        draw_distribution(0, ui.graphicsView->scene());
+        draw_distribution(&distributionsInfo[0], ui.graphicsView->scene());
 
         //draw info about second distribution
-        draw_distribution(1, ui.graphicsView->scene());
+        draw_distribution(&distributionsInfo[1], ui.graphicsView->scene());
     }
 }
 
-void MainWindow::draw_all_points(int current, QGraphicsScene * scene)
-{
-    QPen pen;
-    pen.setColor(distributionsInfo[current].color);
-    pen.setWidth(2);
-
-    for (int i = 0; i < selectionSize; ++i)
-        scene->addLine(plot_x(distributionsInfo[current].x[i]), plot_y(distributionsInfo[current].y[i]),
-                       plot_x(distributionsInfo[current].x[i]), plot_y(distributionsInfo[current].y[i]), pen);
-}
-
 //drawing all about (current) distribution
-void MainWindow::draw_distribution(int current, QGraphicsScene * scene)
+void MainWindow::draw_distribution(DistributionInfo * distributionInfo, QGraphicsScene * scene)
 {
     if (ui.checkBoxSelection->isChecked())
-        draw_all_points(current, scene);
+    {
+        QPen pen;
+        pen.setColor(distributionInfo->color);
+        pen.setWidth(2);
+
+        draw_points(distributionInfo->x, distributionInfo->y, selectionSize, pen, scene);
+    }
 
     if (ui.checkBoxMiddle->isChecked())
-        draw_middle_point(current, scene);
+        draw_middle_point(distributionInfo, scene);
 
     if (ui.checkBoxIsolines->isChecked())
-        draw_isolines(current, scene);
+        draw_isolines(distributionInfo, scene);
 }
 
-void MainWindow::draw_isolines(int current, QGraphicsScene * scene)
+void MainWindow::draw_ellipse(DistributionInfo * distributionInfo, QPainterPath &path, double p)
+{
+    const int STEP_OF_GRID = 300;
+
+    double width = boundingRect.right() - boundingRect.left();
+    width /= static_cast<double>(STEP_OF_GRID);
+    double left = boundingRect.left();
+
+    bool first = true;
+    for (int i = 0; i <= STEP_OF_GRID; ++i)
+    {
+        double currentX = left + static_cast<double>(i)*width;
+        double currentY = distributionInfo->calculate_y1(currentX, p);
+        if (unlikely(first))
+        {
+            if (!(isnan(currentY) || isinf(currentY)))
+            {
+                path.moveTo(plot_x(currentX), plot_y(currentY));
+                first = false;
+            }
+        }
+        else
+            if (!(isnan(currentY) || isinf(currentY)))
+                path.lineTo(plot_x(currentX), plot_y(currentY));
+    }
+
+    for (int i = STEP_OF_GRID; i >= 0; --i)
+    {
+        double currentX = left + static_cast<double>(i)*width;
+        double currentY = distributionInfo->calculate_y2(currentX, p);
+        if (!(isnan(currentY) || isinf(currentY)))
+            path.lineTo(plot_x(currentX), plot_y(currentY));
+    }
+    path.connectPath(path);
+}
+
+void MainWindow::draw_isolines(DistributionInfo * distributionInfo, QGraphicsScene * scene)
+{
+    QPen pen;
+    pen.setColor(QColor(0, 0, 255, 255));
+    pen.setWidth(1);
+
+    calculate_bounding_rect(distributionInfo->x, distributionInfo->y, selectionSize);
+
+    QPainterPath path1;
+    QPainterPath path2;
+    QPainterPath path3;
+    draw_ellipse(distributionInfo, path1, 0.3);
+    draw_ellipse(distributionInfo, path2, 0.6);
+    draw_ellipse(distributionInfo, path3, 0.9);
+    scene->addPath(path1, pen);
+    scene->addPath(path2, pen);
+    scene->addPath(path3, pen);
+}
+
+void MainWindow::draw_middle_point(DistributionInfo * distributionInfo, QGraphicsScene * scene)
 {
     QPen pen;
     pen.setColor(QColor(0, 0, 255, 255));
     pen.setWidth(2);
+
+    scene->addLine(plot_x(distributionInfo->middleX), plot_y(distributionInfo->middleY),
+                   plot_x(distributionInfo->middleX), plot_y(distributionInfo->middleY), pen);
 }
 
-void MainWindow::draw_middle_point(int current, QGraphicsScene * scene)
+void MainWindow::draw_points(double * x, double * y, int size, QPen & pen, QGraphicsScene * scene)
 {
-    QPen pen;
-    pen.setColor(QColor(0, 0, 255, 255));
-    pen.setWidth(2);
+    if (!x || !y || !size)
+        return;
 
-    scene->addLine(plot_x(distributionsInfo[current].middleX), plot_y(distributionsInfo[current].middleY),
-                   plot_x(distributionsInfo[current].middleX), plot_y(distributionsInfo[current].middleY), pen);
+    for (int i = 0; i < size; ++i)
+        scene->addLine(plot_x(x[i]), plot_y(y[i]), plot_x(x[i]), plot_y(y[i]), pen);
 }
 
 //generate selection
@@ -299,4 +382,10 @@ void MainWindow::setup_connections()
     //connect zoom sliders
     connect(ui.zoomX, SIGNAL(valueChanged(int)), this, SLOT(draw()));
     connect(ui.zoomY, SIGNAL(valueChanged(int)), this, SLOT(draw()));
+
+    //connect checkboxes
+    connect(ui.checkBoxDrawReal, SIGNAL(clicked()), this, SLOT(draw()));
+    connect(ui.checkBoxIsolines, SIGNAL(clicked()), this, SLOT(draw()));
+    connect(ui.checkBoxMiddle, SIGNAL(clicked()), this, SLOT(draw()));
+    connect(ui.checkBoxSelection, SIGNAL(clicked()), this, SLOT(draw()));
 }
