@@ -28,7 +28,7 @@ public:
         return b;
     }
 
-    inline double get_selectionSize()
+    inline int get_selectionSize()
     {
         return selectionSize;
     }

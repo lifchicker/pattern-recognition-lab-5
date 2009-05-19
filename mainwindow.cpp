@@ -143,6 +143,8 @@ void MainWindow::draw()
 
     ui.graphicsView->scene()->clear();
 
+    draw_axises(ui.graphicsView->scene());
+
     if (ui.checkBoxDrawReal->isChecked())
     {
         //draw info about first distribution
@@ -151,6 +153,16 @@ void MainWindow::draw()
         //draw info about second distribution
         draw_distribution(&distributionsInfo[1], ui.graphicsView->scene());
     }
+}
+
+void MainWindow::draw_axises(QGraphicsScene * scene)
+{
+    QPen pen;
+    pen.setColor(QColor(0, 0, 255, 255));
+    pen.setWidth(1);
+
+    scene->addLine(plot_x(-1.0), plot_y(0.0), plot_x(1.0), plot_y(0.0), pen);
+    scene->addLine(plot_x(0.0), plot_y(-1.0), plot_x(0.0), plot_y(1.0), pen);
 }
 
 //drawing all about (current) distribution

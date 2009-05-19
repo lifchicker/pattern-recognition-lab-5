@@ -31,6 +31,7 @@ private slots:
 private:
     void calculate_bounding_rect(double * x, double * y, int size);
     void choose_color();
+    void draw_axises(QGraphicsScene * scene);
     void draw_distribution(DistributionInfo * distributionInfo, QGraphicsScene * scene);
     void draw_ellipse(DistributionInfo * distributionInfo, QPainterPath &path, double p);
     void draw_isolines(DistributionInfo * distributionInfo, QGraphicsScene * scene);
