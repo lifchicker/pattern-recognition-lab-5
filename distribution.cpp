@@ -24,22 +24,13 @@ Distribution::~Distribution()
     }
 
     if (b != NULL)
-    {
-        delete[] b;
-        b = NULL;
-    }
+        delete_array(b);
 
     if (__a__ != NULL)
-    {
-        delete[] __a__;
-        __a__ = NULL;
-    }
+        delete_array(__a__);
 
     if (x != NULL)
-    {
-        delete[] x;
-        x = NULL;
-    }
+        delete_array(x);
 }
 
 //generate ||A|| matrix
@@ -50,7 +41,7 @@ bool Distribution::generate__a__(int _m)
     m = _m;
 
     if (__a__ != NULL)
-        delete __a__;
+        delete_array(__a__);
 
     __a__ = new double*[m];
 
@@ -125,7 +116,8 @@ void Distribution::generate_selection(int _selectionSize)
     selectionSize = _selectionSize;
 
     if (x != NULL)
-        delete[] x;
+        delete_array(x);
+
 
     x = new (double*[m]);
     for (int i = 0; i < m; ++i)
@@ -158,7 +150,7 @@ void Distribution::set_b(double ** _b)
         return;
 
     if (b != NULL)
-        delete[] b;
+        delete_array(b);
 
     b = _b;
 }

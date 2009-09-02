@@ -45,11 +45,21 @@ private:
     Ui::MainWindowClass ui; //gui
 
     QRectF boundingRect;
-    Distribution* distributions;
-    int numberOfDistributions;  //number of distributions
-    int m;              //dimention of X
-    bool selectionGenerated;    //true if selection was generated
-    int selectionSize;  //selection size
+    QVector<Distribution> distributions;
+
+    //number of distributions
+    int numberOfDistributions;
+
+    //dimention of X
+    int m;
+
+    //true if selection was generated
+    bool selectionGenerated;
+
+    //selection size
+    int selectionSize;
+
+    //info about 2 current selected dustributions
     DistributionInfo distributionsInfo[2];
 };
 

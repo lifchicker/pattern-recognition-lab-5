@@ -38,6 +38,14 @@ public:
         return x;
     }
 
+    //deleters
+    inline void delete_array(double ** array)
+    {
+        for (int i = 0; i < m; ++i)
+            delete[] array[i];
+        delete[] array;
+        array = 0;
+    }
 
 private:
     double * a;         //vector of average values

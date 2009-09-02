@@ -19,11 +19,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 
 MainWindow::~MainWindow()
 {
-    if (distributions != NULL)
-    {
-        delete[] distributions;
-        distributions = NULL;
-    }
+    if (!distributions.isEmpty())
+        distributions.clear();
 }
 
 void MainWindow::calculate_bounding_rect(double *x, double *y, int size)
@@ -50,7 +47,7 @@ void MainWindow::calculate_bounding_rect(double *x, double *y, int size)
 
 void MainWindow::calculate_values()
 {
-    if (!distributions)
+    if (distributions.isEmpty())
         return;
 
     if (!selectionGenerated)
@@ -110,6 +107,8 @@ void MainWindow::choose_color_1()
     //set and show new color
     distributionsInfo[0].color = color;
     ui.distributionColor1->show();
+
+    draw();
 }
 
 //setup color for the second distribution
@@ -130,6 +129,8 @@ void MainWindow::choose_color_2()
     //show new color
     distributionsInfo[1].color = color;
     ui.distributionColor2->show();
+
+    draw();
 }
 
 //drawing function
@@ -261,7 +262,7 @@ void MainWindow::draw_points(double * x, double * y, int size, QPen & pen, QGrap
 //generate selection
 void MainWindow::generate()
 {
-    if (!distributions)
+    if (distributions.isEmpty())
         return;
 
     selectionSize = ui.selectionDimention->value();
@@ -291,17 +292,20 @@ void MainWindow::load()
     in >> numberOfDistributions;
 
     //delete old distributions
-    if (distributions)
-        delete distributions;
+    if (!distributions.isEmpty())
+        distributions.clear();
 
-    //allocate memory for new distributions
-    distributions = new (Distribution[numberOfDistributions]);
+    distributions.resize(numberOfDistributions);
+
 
     //get dimention of X
     in >> m;
 
     for (int i = 0; i < numberOfDistributions; ++i)
     {
+        //get a priori probability
+
+
         //allocate memory for vector of average values
         double * a = new (double[m]);
 
@@ -319,7 +323,7 @@ void MainWindow::load()
             for (int k = 0; k < m; ++k)
                 in >> b[j][k];
 
-        //set distribution values
+        //fill distribution with correct parameters
         distributions[i].set_a(a);
         distributions[i].set_b(b);
 
