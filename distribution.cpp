@@ -10,7 +10,8 @@ double drand ()
 }
 
 Distribution::Distribution()
-        :a(NULL), b(NULL), m(0), selectionSize(0),
+        :a(NULL), b(NULL), a_priori_probability(0.0),
+        m(0), selectionSize(0),
         __a__(NULL), x(NULL)
 {
 }
@@ -64,13 +65,12 @@ bool Distribution::generate__a__(int _m)
 
             if ((b[j][j] - sum2) <= 0.0)
             {
-//                QMessageBox::critical(this, tr("Generation ||A|| failed"),
-//                                      tr("Invalid matrix of correlations!"),
-//                                      QMessageBox::Ok);
-                delete[] __a__;
-                __a__ = NULL;
+                //invalid matrix of correlations
 
-                //invalid matrix of correlations, return false value
+                //we need to free memory
+                delete_array(__a__);
+
+                //return false
                 return false;
             }
 

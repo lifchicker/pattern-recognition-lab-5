@@ -7,8 +7,7 @@
 #define unlikely(x)	__builtin_expect(!!(x), 0)
 
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
-    : QMainWindow(parent, flags),
-    distributions(NULL)
+    : QMainWindow(parent, flags)
 {
     ui.setupUi(this);
 
@@ -159,7 +158,7 @@ void MainWindow::draw()
 void MainWindow::draw_axises(QGraphicsScene * scene)
 {
     QPen pen;
-    pen.setColor(QColor(0, 0, 255, 255));
+    pen.setColor(QColor(0, 255, 0, 255));
     pen.setWidth(1);
 
     scene->addLine(plot_x(-1.0), plot_y(0.0), plot_x(1.0), plot_y(0.0), pen);
@@ -291,19 +290,23 @@ void MainWindow::load()
     //get number of distributions
     in >> numberOfDistributions;
 
+    //get dimention of X
+    in >> m;
+
+    //prepare for loading distributions
     //delete old distributions
     if (!distributions.isEmpty())
         distributions.clear();
 
+    //resize vector for new distributions
     distributions.resize(numberOfDistributions);
-
-
-    //get dimention of X
-    in >> m;
 
     for (int i = 0; i < numberOfDistributions; ++i)
     {
         //get a priori probability
+        double a_priori_probability;
+
+        in >> a_priori_probability;
 
 
         //allocate memory for vector of average values
@@ -325,11 +328,28 @@ void MainWindow::load()
 
         //fill distribution with correct parameters
         distributions[i].set_a(a);
+        distributions[i].set_a_priori_probability(a_priori_probability);
         distributions[i].set_b(b);
 
-        distributions[i].generate__a__(m);
+        //generate ||A|| matrix
+        if (!distributions[i].generate__a__(m))
+        {
+            //invalid matrix of correlations - let's say about it
+            QMessageBox::critical(this, tr("Generation ||A|| failed"),
+                                  tr("Invalid matrix of correlations!"),
+                                  QMessageBox::Ok);
+            //clear memory
+            distributions.clear();
+
+            //close input file
+            in.close();
+
+            //exit from load function
+            return;
+        }
     }
 
+    //close input file
     in.close();
 
     ui.distribution1->setMaximum(numberOfDistributions);
