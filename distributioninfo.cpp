@@ -10,10 +10,12 @@ DistributionInfo::DistributionInfo()
 {
 }
 
-void DistributionInfo::calculate_info(int selectionSize)
+void DistributionInfo::calculate_info(int _selectionSize)
 {
-    if ((selectionSize == 0) || !x || !y)
+    if ((_selectionSize == 0) || !x || !y)
         return;
+
+    selectionSize = _selectionSize;
 
     middleX = 0.0;
     middleY = 0.0;

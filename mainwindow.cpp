@@ -143,7 +143,8 @@ void MainWindow::draw()
 
     ui.graphicsView->scene()->clear();
 
-    draw_axises(ui.graphicsView->scene());
+    if (ui.checkBoxDrawAxises->isChecked())
+        draw_axises(ui.graphicsView->scene());
 
     if (ui.checkBoxDrawReal->isChecked())
     {
@@ -158,7 +159,7 @@ void MainWindow::draw()
 void MainWindow::draw_axises(QGraphicsScene * scene)
 {
     QPen pen;
-    pen.setColor(QColor(0, 255, 0, 255));
+    pen.setColor(QColor(10, 155, 10, 255));
     pen.setWidth(1);
 
     scene->addLine(plot_x(-1.0), plot_y(0.0), plot_x(1.0), plot_y(0.0), pen);
@@ -223,7 +224,7 @@ void MainWindow::draw_ellipse(DistributionInfo * distributionInfo, QPainterPath 
 void MainWindow::draw_isolines(DistributionInfo * distributionInfo, QGraphicsScene * scene)
 {
     QPen pen;
-    pen.setColor(QColor(0, 0, 255, 255));
+    pen.setColor(QColor(10, 155, 10, 255));
     pen.setWidth(1);
 
     calculate_bounding_rect(distributionInfo->x, distributionInfo->y, selectionSize);
@@ -242,7 +243,7 @@ void MainWindow::draw_isolines(DistributionInfo * distributionInfo, QGraphicsSce
 void MainWindow::draw_middle_point(DistributionInfo * distributionInfo, QGraphicsScene * scene)
 {
     QPen pen;
-    pen.setColor(QColor(0, 0, 255, 255));
+    pen.setColor(QColor(10, 155, 10, 255));
     pen.setWidth(2);
 
     scene->addLine(plot_x(distributionInfo->middleX), plot_y(distributionInfo->middleY),
@@ -267,7 +268,7 @@ void MainWindow::generate()
     selectionSize = ui.selectionDimention->value();
 
     for (int i = 0; i < numberOfDistributions; ++i)
-        distributions[i].generate_selection(selectionSize);
+        distributions[i].generate_selection(selectionSize*distributions[i].get_a_priori_probability());
 
     selectionGenerated = true;
 }
@@ -420,6 +421,7 @@ void MainWindow::setup_connections()
     connect(ui.zoomY, SIGNAL(valueChanged(int)), this, SLOT(draw()));
 
     //connect checkboxes
+    connect(ui.checkBoxDrawAxises, SIGNAL(clicked()), this, SLOT(draw()));
     connect(ui.checkBoxDrawReal, SIGNAL(clicked()), this, SLOT(draw()));
     connect(ui.checkBoxIsolines, SIGNAL(clicked()), this, SLOT(draw()));
     connect(ui.checkBoxMiddle, SIGNAL(clicked()), this, SLOT(draw()));

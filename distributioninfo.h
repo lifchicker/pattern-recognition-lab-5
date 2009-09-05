@@ -9,7 +9,7 @@ public:
     DistributionInfo();
 
 public:
-    void calculate_info(int selectionSize);
+    void calculate_info(int _selectionSize);
     double calculate_y1(double x, double p);
     double calculate_y2(double x, double p);
 
@@ -19,6 +19,8 @@ public:
 public:
     double * x;
     double * y;
+
+    int selectionSize;
 
     double kxy;
     double middleX;
