@@ -1,6 +1,8 @@
 #ifndef DISTRIBUTION_H
 #define DISTRIBUTION_H
 
+#include "randomvector.h"
+
 class Distribution
 {
 public:
@@ -10,17 +12,11 @@ public:
 public:
     bool generate__a__(int _m);
     void generate_normal_vector(double * vec);
-    void generate_vector(double * vec);
-    void generate_selection(int _selectionSize);
+    void generate_vector(RandomVector & vec);
 
     //setters
     void set_a(double * _a);
     void set_b(double ** _b);
-
-    inline void set_a_priori_probability(double _a_priori_probability)
-    {
-        a_priori_probability = _a_priori_probability;
-    }
 
     //getters
     inline const double * get_a() const
@@ -43,11 +39,6 @@ public:
         return selectionSize;
     }
 
-    inline double ** get_x() const
-    {
-        return x;
-    }
-
     //deleters
     inline void delete_array(double ** array)
     {
@@ -64,22 +55,12 @@ private:
     //matrix of correlations
     double ** b;
 
-    //a priori probability
-    double a_priori_probability;
-
     //dimention of X
     int m;
-
-    //selection size
-    int selectionSize;
 
     //generated data
     // this is the ||A|| matrix
     double ** __a__;
-
-    //selection
-    double ** x;
-
 };
 
 #endif // DISTRIBUTION_H

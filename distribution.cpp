@@ -91,10 +91,12 @@ void Distribution::generate_normal_vector(double * vec)
 }
 
 // generate random vector with predefined partition law
-void Distribution::generate_vector(double * vec)
+void Distribution::generate_vector(RandomVector & vec)
 {
-    if (!vec)
-        return;
+    if (!vec.values.isEmpty())
+        vec.values.clear();
+
+    vec.values.resize(m);
 
     double * nv = new double[m];
     generate_normal_vector(nv);
@@ -104,7 +106,7 @@ void Distribution::generate_vector(double * vec)
         double stringSum = 0.0;
         for (int j = 0; j < m; ++j)
             stringSum += __a__[i][j]*nv[j];
-        vec[i] = stringSum + a[i];
+        vec.values[i] = stringSum + a[i];
     }
 
     delete[] nv;
