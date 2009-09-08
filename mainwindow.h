@@ -45,10 +45,10 @@ private:
     Ui::MainWindowClass ui; //gui
 
     QRectF boundingRect;
-    QVector<Distribution> distributions;
 
-    //number of distributions
-    int numberOfDistributions;
+    //info about distributions: ||A|| matrix,
+    //matrix of correlations, vector of average values
+    QVector<Distribution> distributions;
 
     //dimention of X
     int m;
@@ -60,7 +60,7 @@ private:
     int selectionSize;
 
     //info about 2 current selected dustributions
-    DistributionInfo distributionsInfo[2];
+    ActiveDistribution activeDistributions[2];
 };
 
 #endif // MAINWINDOW_H
