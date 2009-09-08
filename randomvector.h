@@ -1,8 +1,6 @@
 #ifndef RANDOMVECTOR_H
 #define RANDOMVECTOR_H
 
-#include "distributioninfo.h"
-
 #include <QVector>
 
 class RandomVector
@@ -16,10 +14,6 @@ public:
         trueDistribution = vec.trueDistribution;
         recognitionedDistribution = vec.recognitionedDistribution;
     }
-
-public:
-    //calculate distribution info from values
-    DistributionInfo calculateDistributionInfo();
 
 public:
     QVector<double> values;

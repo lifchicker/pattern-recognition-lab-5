@@ -34,7 +34,7 @@ public:
         return b;
     }
 
-    inline int get_selectionSize()
+    inline int get_selectionSize() const
     {
         return selectionSize;
     }

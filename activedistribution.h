@@ -3,7 +3,26 @@
 
 #include "distributioninfo.h"
 
-class QPoint;
+#include <QVector>
+
+struct Components
+{
+    Components():first(0.0), second(0.0) {}
+
+    //first component
+    union
+    {
+        double first;
+        double x;
+    };
+
+    //second component
+    union
+    {
+        double second;
+        double y;
+    };
+};
 
 class ActiveDistribution
 {
@@ -11,14 +30,12 @@ public:
     ActiveDistribution();
 
 public:
-    //setters
-    void set_vectors(double * vec1, double * vec2);
+    //calculate distribution info from values
+    DistributionInfo calculateDistributionInfo();
 
 public:
-    double * x;
-    double * y;
-
-    int selectionSize;
+    //first component
+    QVector<Components> components;
 };
 
 #endif // ACTIVEDISTRIBUTION_H
