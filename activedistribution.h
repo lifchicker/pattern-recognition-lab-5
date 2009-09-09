@@ -1,3 +1,7 @@
+/*
+    Active Distribution contain components
+    from selection for current selected distribution
+*/
 #ifndef ACTIVEDISTRIBUTION_H
 #define ACTIVEDISTRIBUTION_H
 

@@ -10,6 +10,8 @@ public:
 
 public:
     QVector<RandomVector> vectors;
+
+    int distribution;
 };
 
 #endif // SELECTION_H

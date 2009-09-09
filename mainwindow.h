@@ -4,8 +4,9 @@
 #include <QMainWindow>
 #include "ui_mainwindow.h"
 
+
 #include "distribution.h"
-#include "distributioninfo.h"
+#include "activedistribution.h"
 
 class QPainterPath;
 class QRectF;
