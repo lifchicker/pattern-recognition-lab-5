@@ -10,9 +10,8 @@ double drand ()
 }
 
 Distribution::Distribution()
-        :a(NULL), b(NULL), a_priori_probability(0.0),
-        m(0), selectionSize(0),
-        __a__(NULL), x(NULL)
+        :a(NULL), b(NULL),
+        m(0), __a__(NULL)
 {
 }
 
@@ -91,48 +90,45 @@ void Distribution::generate_normal_vector(double * vec)
 }
 
 // generate random vector with predefined partition law
-void Distribution::generate_vector(RandomVector & vec)
+void Distribution::generate_vector(RandomVector & vec, double * tmpVector)
 {
     if (!vec.values.isEmpty())
         vec.values.clear();
 
     vec.values.resize(m);
 
-    double * nv = new double[m];
-    generate_normal_vector(nv);
+    generate_normal_vector(tmpVector);
 
     for (int i = 0; i < m; ++i)
     {
         double stringSum = 0.0;
         for (int j = 0; j < m; ++j)
-            stringSum += __a__[i][j]*nv[j];
+            stringSum += __a__[i][j]*tmpVector[j];
         vec.values[i] = stringSum + a[i];
     }
 
-    delete[] nv;
 }
 
 //generate new selection
-void Distribution::generate_selection(int _selectionSize)
+void Distribution::generate_selection(Selection & selection)
 {
-    selectionSize = _selectionSize;
+    //if we have no vectors to fill random values
+    if (selection.vectors.isEmpty())
+        //go back
+        return;
 
-    if (x != NULL)
-        delete_array(x);
+    //create temp vector wich will be contain normal vector
+    //this is some sort of my optimization
+    double * nv = new double[m];
 
+    //for all vectors in current selection
+    //generate vector with current distribution
+    for (int i = 0; i < selection.vectors.size(); ++i)
+        generate_vector(selection.vectors[i], nv);
 
-    x = new (double*[m]);
-    for (int i = 0; i < m; ++i)
-        x[i] = new (double[selectionSize]);
+    //delete temp vector
+    delete[] nv;
 
-    double * tmp_x = new (double[m]);
-    for (int i = 0; i < selectionSize; ++i)
-    {
-        generate_vector(tmp_x);
-        for (int j = 0; j < m; j++)
-            x[j][i] = tmp_x[j];
-    }
-    delete[] tmp_x;
 }
 
 void Distribution::set_a(double * _a)

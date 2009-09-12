@@ -51,6 +51,8 @@ private:
     //matrix of correlations, vector of average values
     QVector<Distribution> distributions;
 
+    QVector<Selection> selections;
+
     //dimention of X
     int m;
 

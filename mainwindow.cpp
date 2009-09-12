@@ -267,8 +267,13 @@ void MainWindow::generate()
 
     selectionSize = ui.selectionDimention->value();
 
-    for (int i = 0; i < numberOfDistributions; ++i)
+    //generate selections for all distributions
+    for (int i = 0; i < distributions.size(); ++i)
+    {
+        selections.resize(distributions.size());
+
         distributions[i].generate_selection(selectionSize*distributions[i].get_a_priori_probability());
+    }
 
     selectionGenerated = true;
 }
@@ -337,7 +342,7 @@ void MainWindow::load()
         {
             //invalid matrix of correlations - let's say about it
             QMessageBox::critical(this, tr("Generation ||A|| failed"),
-                                  tr("Invalid matrix of correlations!"),
+                                  tr("Invalid matrix of correlations #%1!", QString("%1").arg(i)),
                                   QMessageBox::Ok);
             //clear memory
             distributions.clear();
@@ -361,6 +366,8 @@ void MainWindow::load()
 
     ui.label_numberOfDistributions->setText(QString("%1").arg(numberOfDistributions));
     ui.label_m->setText(QString("%1").arg(m));
+
+    selectionGenerated = false;
 }
 
 //get transformed x coordinate

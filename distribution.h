@@ -1,7 +1,7 @@
 #ifndef DISTRIBUTION_H
 #define DISTRIBUTION_H
 
-#include "randomvector.h"
+#include "selection.h"
 
 class Distribution
 {
@@ -12,7 +12,8 @@ public:
 public:
     bool generate__a__(int _m);
     void generate_normal_vector(double * vec);
-    void generate_vector(RandomVector & vec);
+    void generate_vector(RandomVector & vec, double * tmpVector);
+    void generate_selection(Selection & selection);
 
     //setters
     void set_a(double * _a);
@@ -29,17 +30,11 @@ public:
         return a_priori_probability;
     }
 
-    inline double ** get_b() const
+    inline const double ** get_b() const
     {
         return b;
     }
 
-    inline int get_selectionSize() const
-    {
-        return selectionSize;
-    }
-
-    //deleters
     inline void delete_array(double ** array)
     {
         for (int i = 0; i < m; ++i)
