@@ -19,6 +19,11 @@ public:
     void set_a(double * _a);
     void set_b(double ** _b);
 
+    inline void set_a_priori_probability(double _a_priori_probability)
+    {
+        a_priori_probability = _a_priori_probability;
+    }
+
     //getters
     inline const double * get_a() const
     {
@@ -30,7 +35,7 @@ public:
         return a_priori_probability;
     }
 
-    inline const double ** get_b() const
+    inline double ** get_b()
     {
         return b;
     }
@@ -56,6 +61,8 @@ private:
     //generated data
     // this is the ||A|| matrix
     double ** __a__;
+
+    double a_priori_probability;
 };
 
 #endif // DISTRIBUTION_H

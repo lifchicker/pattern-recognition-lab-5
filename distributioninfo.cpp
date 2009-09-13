@@ -3,15 +3,13 @@
 
 #include <math.h>
 
-#include <QColor>
-
 DistributionInfo::DistributionInfo():
         kxy(0.0), middleX(0.0), middleY(0.0),
         sigmaX(0.0), sigmaY(0.0), r(0.0)
 {
 }
 
-DisDistributionInfo::DistributionInfo(const DistributionInfo & info)
+DistributionInfo::DistributionInfo(const DistributionInfo & info)
 {
     kxy = info.kxy;
     middleX = info.middleX;
@@ -32,7 +30,7 @@ DistributionInfo & DistributionInfo::operator = (const DistributionInfo & info)
     r = info.r;
     color = info.color;
 
-    return &this;
+    return *this;
 }
 
 double DistributionInfo::calculate_y1(double x, double p)

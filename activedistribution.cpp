@@ -1,15 +1,39 @@
 #include "activedistribution.h"
 
+#include <QRectF>
+#include <math.h>
+
 ActiveDistribution::ActiveDistribution()
+        :distribution(0)
 {
 }
 
-DistributionInfo ActiveDistribution::calculateInfo()
+QRectF ActiveDistribution::calculateBoundingRect()
 {
-    DistributionInfo info;
+    QRectF boundingRect;
 
+    for (int i = 0; i < components.size(); ++i)
+    {
+        if (components[i].x < boundingRect.left())
+            boundingRect.setLeft(components[i].x);
+
+        if (components[i].x > boundingRect.right())
+            boundingRect.setRight(components[i].x);
+
+        if (components[i].y < boundingRect.bottom())
+            boundingRect.setBottom(components[i].y);
+
+        if (components[i].y >  boundingRect.top())
+            boundingRect.setTop(components[i].y);
+    }
+
+    return boundingRect;
+}
+
+void ActiveDistribution::calculateDistributionInfo()
+{
     if (components.isEmpty())
-        return info;
+        return;
 
     info.middleX = 0.0;
     info.middleY = 0.0;
@@ -34,10 +58,10 @@ DistributionInfo ActiveDistribution::calculateInfo()
     info.sigmaY /= static_cast<double>(components.size());
     info.kxy /= static_cast<double>(components.size());
 
-    info.sigmaX = sqrt(sigmaX);
-    info.sigmaY = sqrt(sigmaY);
+    info.sigmaX = sqrt(info.sigmaX);
+    info.sigmaY = sqrt(info.sigmaY);
 
     info.r = info.kxy/(info.sigmaX*info.sigmaY);
 
-    return info;
+    info.boundingRect = calculateBoundingRect();
 }

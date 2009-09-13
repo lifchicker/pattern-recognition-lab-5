@@ -1,7 +1,8 @@
 #ifndef DISTRIBUTIONINFO_H
 #define DISTRIBUTIONINFO_H
 
-class QColor;
+#include <QColor>
+#include <QRectF>
 
 class DistributionInfo
 {
@@ -23,6 +24,8 @@ public:
     double sigmaY;
     double r;
     QColor color;
+
+    QRectF boundingRect;
 };
 
 #endif // DISTRIBUTIONINFO_H

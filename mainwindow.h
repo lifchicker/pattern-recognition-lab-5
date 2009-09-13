@@ -9,7 +9,6 @@
 #include "activedistribution.h"
 
 class QPainterPath;
-class QRectF;
 class QGraphicsScene;
 
 class MainWindow : public QMainWindow
@@ -30,22 +29,19 @@ private slots:
     void save_selection();
 
 private:
-    void calculate_bounding_rect(double * x, double * y, int size);
     void choose_color();
     void draw_axises(QGraphicsScene * scene);
-    void draw_distribution(DistributionInfo * distributionInfo, QGraphicsScene * scene);
-    void draw_ellipse(DistributionInfo * distributionInfo, QPainterPath &path, double p);
-    void draw_isolines(DistributionInfo * distributionInfo, QGraphicsScene * scene);
-    void draw_middle_point(DistributionInfo * distributionInfo, QGraphicsScene * scene);
-    void draw_points(double * x, double * y, int size, QPen & pen, QGraphicsScene * scene);
+    void draw_distribution(ActiveDistribution & distribution, QGraphicsScene * scene);
+    void draw_ellipse(ActiveDistribution & distribution, QPainterPath &path, double p);
+    void draw_isolines(ActiveDistribution & distribution, QGraphicsScene * scene);
+    void draw_middle_point(DistributionInfo & distributionInfo, QGraphicsScene * scene);
+    void draw_points(QVector<Components> &components, QPen & pen, QGraphicsScene * scene);
     double plot_x(double x);
     double plot_y(double y);
     void setup_connections();
 
 private:
     Ui::MainWindowClass ui; //gui
-
-    QRectF boundingRect;
 
     //info about distributions: ||A|| matrix,
     //matrix of correlations, vector of average values

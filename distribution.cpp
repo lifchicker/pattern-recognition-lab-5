@@ -29,8 +29,6 @@ Distribution::~Distribution()
     if (__a__ != NULL)
         delete_array(__a__);
 
-    if (x != NULL)
-        delete_array(x);
 }
 
 //generate ||A|| matrix

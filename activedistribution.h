@@ -9,6 +9,8 @@
 
 #include <QVector>
 
+class QRectF;
+
 struct Components
 {
     Components():first(0.0), second(0.0) {}
@@ -35,11 +37,19 @@ public:
 
 public:
     //calculate distribution info from values
-    DistributionInfo calculateDistributionInfo();
+    void calculateDistributionInfo();
+    QRectF calculateBoundingRect();
+
+    inline const DistributionInfo & get_info()
+    {
+        return info;
+    }
 
 public:
     //first component
     QVector<Components> components;
+    DistributionInfo info;
+    int distribution;
 };
 
 #endif // ACTIVEDISTRIBUTION_H
