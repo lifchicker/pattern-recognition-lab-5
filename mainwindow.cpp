@@ -33,12 +33,18 @@ void MainWindow::calculate_values()
     int vec1 = ui.component1->value() - 1;
     int vec2 = ui.component2->value() - 1;
 
+    activeDistributions[0].components.resize(selections[distr1].vectors.size());
+    activeDistributions[1].components.resize(selections[distr2].vectors.size());
+
     //set vectors to active distributions
     for (int i = 0; i < selections[distr1].vectors.size(); ++i)
     {
         activeDistributions[0].components[i].x = selections[distr1].vectors[i].values[vec1];
         activeDistributions[0].components[i].y = selections[distr1].vectors[i].values[vec2];
+    }
 
+    for (int i = 0; i < selections[distr2].vectors.size(); ++i)
+    {
         activeDistributions[1].components[i].x = selections[distr2].vectors[i].values[vec1];
         activeDistributions[1].components[i].y = selections[distr2].vectors[i].values[vec2];
     }
@@ -257,7 +263,7 @@ void MainWindow::generate()
         distributions[i].generate_selection(selections[i]);
 
         //set true distribution for all generated random vectors
-        for (int j = 0; j < selections.size(); ++j)
+        for (int j = 0; j < selections[i].vectors.size(); ++j)
             selections[i].vectors[j].trueDistribution = i;
     }
 
