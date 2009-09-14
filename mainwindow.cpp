@@ -257,7 +257,9 @@ void MainWindow::generate()
     for (int i = 0; i < distributions.size(); ++i)
     {
         selections[i].distribution = i;
-        selections[i].vectors.resize(selectionSize*distributions[i].get_a_priori_probability());
+        selections[i].vectors.resize(static_cast<int>(
+                static_cast<double>(selectionSize)*distributions[i].get_a_priori_probability()
+                ));
 
         //generate random vectors with a given distribution
         distributions[i].generate_selection(selections[i]);
@@ -300,6 +302,8 @@ void MainWindow::load()
     //resize vector for new distributions
     distributions.resize(numberOfDistributions);
 
+    double summOfAPrioriProbability = 0.0;
+
     for (int i = 0; i < numberOfDistributions; ++i)
     {
         //get a priori probability
@@ -307,6 +311,18 @@ void MainWindow::load()
 
         in >> a_priori_probability;
 
+        summOfAPrioriProbability += a_priori_probability;
+        if (summOfAPrioriProbability > 1.0)
+        {
+            QMessageBox::critical(this, tr("Invalid sum of a priori probabilities"),
+                                  tr("Sum of all a priori probabilities >1"),
+                                  QMessageBox::Ok);
+
+            distributions.clear();
+            selections.clear();
+
+            return;
+        }
 
         //allocate memory for vector of average values
         double * a = new (double[m]);
@@ -339,6 +355,7 @@ void MainWindow::load()
                                   QMessageBox::Ok);
             //clear memory
             distributions.clear();
+            selections.clear();
 
             //close input file
             in.close();
