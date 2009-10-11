@@ -1,152 +1,113 @@
 #include "distribution.h"
 
-#include <memory.h>
-#include <math.h>
-#include <stdlib.h>
-
-double drand ()
-{
-    return static_cast<double>(rand())/static_cast<double>(RAND_MAX);
-}
+#include "math.h"
 
 Distribution::Distribution()
-        :a(NULL), b(NULL),
-        m(0), __a__(NULL)
 {
 }
 
-Distribution::~Distribution()
+QRectF Distribution::calculate_bounding_box(int component1, int component2)
 {
-    if (a != NULL)
-    {
-        delete[] a;
-        a = NULL;
-    }
+    QRectF boundingRect;
 
-    if (b != NULL)
-        delete_array(b);
-
-    if (__a__ != NULL)
-        delete_array(__a__);
-
-}
-
-//generate ||A|| matrix
-//must be called after loading new data
-bool Distribution::generate__a__(int _m)
-{
-    //set new dimention of x
-    m = _m;
-
-    if (__a__ != NULL)
-        delete_array(__a__);
-
-    __a__ = new double*[m];
-
-    for (int i = 0; i < m; ++i)
-    {
-        __a__[i] = new double[m];
-        memset(__a__[i], 0, sizeof(double)*m);
-    }
-
-    for (int i = 0; i < m; ++i)
-        for (int j = 0; j <= i; ++j)
-        {
-            double sum1 = 0.0;
-            for (int k = 0; k < j; ++k)
-                sum1 += __a__[i][k]*__a__[j][k];
-
-            double sum2 = 0.0;
-            for (int k = 0; k < j; ++k)
-                sum2 += __a__[j][k]*__a__[j][k];
-
-            if ((b[j][j] - sum2) <= 0.0)
-            {
-                //invalid matrix of correlations
-
-                //we need to free memory
-                delete_array(__a__);
-
-                //return false
-                return false;
-            }
-
-            __a__[i][j] = (b[i][j] - sum1)/sqrt(b[j][j] - sum2);
-        }
-
-    return true;
-}
-
-// generate random vector with normal distribution
-void Distribution::generate_normal_vector(double * vec)
-{
-    if (!vec)
-        return;
-
-    for (int i = 0; i < m; ++i)
-        vec[i] = drand();
-}
-
-// generate random vector with predefined partition law
-void Distribution::generate_vector(RandomVector & vec, double * tmpVector)
-{
-    if (!vec.values.isEmpty())
-        vec.values.clear();
-
-    vec.values.resize(m);
-
-    generate_normal_vector(tmpVector);
-
-    for (int i = 0; i < m; ++i)
-    {
-        double stringSum = 0.0;
-        for (int j = 0; j < m; ++j)
-            stringSum += __a__[i][j]*tmpVector[j];
-        vec.values[i] = stringSum + a[i];
-    }
-
-}
-
-//generate new selection
-void Distribution::generate_selection(Selection & selection)
-{
-    //if we have no vectors to fill random values
-    if (selection.vectors.isEmpty())
-        //go back
-        return;
-
-    //create temp vector wich will be contain normal vector
-    //this is some sort of my optimization
-    double * nv = new double[m];
-
-    //for all vectors in current selection
-    //generate vector with current distribution
     for (int i = 0; i < selection.vectors.size(); ++i)
-        generate_vector(selection.vectors[i], nv);
+    {
+        if (selection.vectors[i].values[component1] < boundingRect.left())
+            boundingRect.setLeft(selection.vectors[i].values[component1]);
 
-    //delete temp vector
-    delete[] nv;
+        if (selection.vectors[i].values[component1] > boundingRect.right())
+            boundingRect.setRight(selection.vectors[i].values[component1]);
 
+        if (selection.vectors[i].values[component2] < boundingRect.bottom())
+            boundingRect.setBottom(selection.vectors[i].values[component2]);
+
+        if (selection.vectors[i].values[component2] >  boundingRect.top())
+            boundingRect.setTop(selection.vectors[i].values[component2]);
+    }
+
+    return boundingRect;
 }
 
-void Distribution::set_a(double * _a)
+double Distribution::calculate_correlation_of_components(int component1, int component2)
 {
-    if (!_a)
-        return;
+    double kxy = 0.0;
 
-    if (a != NULL)
-        delete[] a;
+    for (int i = 0; i < selection.vectors.size(); ++i)
+                kxy += (selection.vectors[i].values[component1] - info.middle[component1])*(selection.vectors[i].values[component2] - info.middle[component2]);
 
-    a = _a;
+    kxy /= static_cast<double>(selection.vectors.size());
+
+    return kxy;
 }
 
-void Distribution::set_b(double ** _b)
+void Distribution::calculate_distribution_info()
 {
-    if (!_b)
+    if (selection.vectors.isEmpty())
         return;
 
-    if (b != NULL)
-        delete_array(b);
+    if (info.middle.isEmpty())
+        info.middle.resize(selection.vectors.size());
 
-    b = _b;
+    if (info.sigma.isEmpty())
+        info.sigma.resize(selection.vectors.size());
+
+    for (int i = 0; i < selection.vectors.size(); ++i)
+    {
+        for (int j = 0; j < selection.vectors[i].values.size(); ++j)
+            info.middle[j] += selection.vectors[i].values[j];
+
+    }
+
+    for (int i = 0; i < selection.vectors.size(); ++i)
+        for (int j = 0; j < selection.vectors[i].values.size(); ++j)
+                info.sigma[j] += (selection.vectors[i].values[j] - info.middle[j])*(selection.vectors[i].values[j] - info.middle[j]);
+
+    for (int i = 0; i < selection.vectors.size(); ++i)
+    {
+        info.middle[i] /= static_cast<double>(selection.vectors[i].values.size());
+        info.sigma[i] /= static_cast<double>(selection.vectors[i].values.size());
+        info.sigma[i] = sqrt(info.sigma[i]);
+    }
+
+    //info.r = info.kxy/(info.sigmaX*info.sigmaY);
+}
+
+double Distribution::calculate_y1(int component1, int component2, double r, double x, double p)
+{
+    double sigmaX = info.sigma[component1];
+    double sigmaY = info.sigma[component2];
+    double middleX = info.middle[component1];
+    double middleY = info.middle[component2];
+
+    double sx2 = sigmaX*sigmaX;
+    double sy2 = sigmaY*sigmaY;
+
+    double lambdad = -log(p);//fabs(2.0*(1.0 - r*r)*log(2.0*M_PI*sigmaX*sigmaY*sqrt(1.0 - r*r)*p));
+
+    return (r*sigmaY*x + sigmaX*middleY - r*sigmaY*middleX +
+                sqrt(r*r*sy2*x*x - 2.0*r*r*sy2*x*middleX +
+                r*r*sy2*middleX*middleX - sy2*x*x +
+                2.0*sy2*x*middleX - sy2*middleX*middleX +
+                lambdad*sx2*sy2)
+            )/sigmaX;
+}
+
+double Distribution::calculate_y2(int component1, int component2, double r, double x, double p)
+{
+    double sigmaX = info.sigma[component1];
+    double sigmaY = info.sigma[component2];
+    double middleX = info.middle[component1];
+    double middleY = info.middle[component2];
+
+    double sx2 = sigmaX*sigmaX;
+    double sy2 = sigmaY*sigmaY;
+
+    double lambdad = -log(p);//fabs(2.0*(1.0 - r*r)*log(2.0*M_PI*sigmaX*sigmaY*sqrt(1.0 - r*r)*p));
+
+    return (r*sigmaY*x + sigmaX*middleY - r*sigmaY*middleX -
+                sqrt(r*r*sy2*x*x - 2.0*r*r*sy2*x*middleX +
+                r*r*sy2*middleX*middleX - sy2*x*x +
+                2.0*sy2*x*middleX - sy2*middleX*middleX +
+                lambdad*sx2*sy2)
+            )/sigmaX;
 }

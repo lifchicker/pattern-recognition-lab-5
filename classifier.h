@@ -4,7 +4,7 @@
 class Classifier
 {
 public:
-    virtual Classifier();
+    Classifier();
 };
 
 #endif // CLASSIFIER_H

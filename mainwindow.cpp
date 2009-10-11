@@ -1,6 +1,8 @@
 #include <QtGui>
 #include "mainwindow.h"
 
+#include "selection.h"
+
 #include <fstream>
 
 #define likely(x)	__builtin_expect(!!(x), 1)
@@ -28,44 +30,31 @@ void MainWindow::calculate_values()
     if (!selectionGenerated)
         generate();
 
-    int distr1 = ui.distribution1->value() - 1;
-    int distr2 = ui.distribution2->value() - 1;
-    int vec1 = ui.component1->value() - 1;
-    int vec2 = ui.component2->value() - 1;
-
-    activeDistributions[0].components.resize(selections[distr1].vectors.size());
-    activeDistributions[1].components.resize(selections[distr2].vectors.size());
-
-    //set vectors to active distributions
-    for (int i = 0; i < selections[distr1].vectors.size(); ++i)
-    {
-        activeDistributions[0].components[i].x = selections[distr1].vectors[i].values[vec1];
-        activeDistributions[0].components[i].y = selections[distr1].vectors[i].values[vec2];
-    }
-
-    for (int i = 0; i < selections[distr2].vectors.size(); ++i)
-    {
-        activeDistributions[1].components[i].x = selections[distr2].vectors[i].values[vec1];
-        activeDistributions[1].components[i].y = selections[distr2].vectors[i].values[vec2];
-    }
+    setup_active_distributions_and_components();
 
     //calculate distribution info
-    activeDistributions[0].calculateDistributionInfo();
-    activeDistributions[1].calculateDistributionInfo();
+    distributions[activeDistribution[0]].calculate_distribution_info();
+    distributions[activeDistribution[1]].calculate_distribution_info();
 
-    ui.labelMiddleX->setText(QString("%1").arg(activeDistributions[0].info.middleX));
-    ui.labelMiddleY->setText(QString("%1").arg(activeDistributions[0].info.middleY));
-    ui.labelSigmaX->setText(QString("%1").arg(activeDistributions[0].info.sigmaX));
-    ui.labelSigmaY->setText(QString("%1").arg(activeDistributions[0].info.sigmaY));
-    ui.labelKxy->setText(QString("%1").arg(activeDistributions[0].info.kxy));
-    ui.labelR->setText(QString("%1").arg(activeDistributions[0].info.r));
+    kxy[0] = distributions[activeDistribution[0]].calculate_correlation_of_components(activeComponent[0], activeComponent[1]);
+    kxy[1] = distributions[activeDistribution[1]].calculate_correlation_of_components(activeComponent[0], activeComponent[1]);
 
-    ui.labelMiddleX_2->setText(QString("%1").arg(activeDistributions[1].info.middleX));
-    ui.labelMiddleY_2->setText(QString("%1").arg(activeDistributions[1].info.middleY));
-    ui.labelSigmaX_2->setText(QString("%1").arg(activeDistributions[1].info.sigmaX));
-    ui.labelSigmaY_2->setText(QString("%1").arg(activeDistributions[1].info.sigmaY));
-    ui.labelKxy_2->setText(QString("%1").arg(activeDistributions[1].info.kxy));
-    ui.labelR_2->setText(QString("%1").arg(activeDistributions[1].info.r));
+    r[0] = kxy[0]/(distributions[activeDistribution[0]].info.sigma[activeComponent[0]]*distributions[activeDistribution[0]].info.sigma[activeComponent[1]]);
+    r[1] = kxy[1]/(distributions[activeDistribution[1]].info.sigma[activeComponent[0]]*distributions[activeDistribution[1]].info.sigma[activeComponent[1]]);
+
+    ui.labelMiddleX->setText(QString("%1").arg(distributions[activeDistribution[0]].info.middle[activeComponent[0]]));
+    ui.labelMiddleY->setText(QString("%1").arg(distributions[activeDistribution[0]].info.middle[activeComponent[1]]));
+    ui.labelSigmaX->setText(QString("%1").arg(distributions[activeDistribution[0]].info.sigma[activeComponent[0]]));
+    ui.labelSigmaY->setText(QString("%1").arg(distributions[activeDistribution[0]].info.sigma[activeComponent[1]]));
+    ui.labelKxy->setText(QString("%1").arg(kxy[0]));
+    ui.labelR->setText(QString("%1").arg(r[0]));
+
+    ui.labelMiddleX_2->setText(QString("%1").arg(distributions[activeDistribution[1]].info.middle[activeComponent[0]]));
+    ui.labelMiddleY_2->setText(QString("%1").arg(distributions[activeDistribution[1]].info.middle[activeComponent[1]]));
+    ui.labelSigmaX_2->setText(QString("%1").arg(distributions[activeDistribution[1]].info.sigma[activeComponent[0]]));
+    ui.labelSigmaY_2->setText(QString("%1").arg(distributions[activeDistribution[1]].info.sigma[activeComponent[1]]));
+    ui.labelKxy_2->setText(QString("%1").arg(kxy[1]));
+    ui.labelR_2->setText(QString("%1").arg(r[1]));
 
     draw();
 }
@@ -86,7 +75,7 @@ void MainWindow::choose_color_1()
         ui.distributionColor1->setScene(new QGraphicsScene(ui.distributionColor1->rect(), this));
 
     //set and show new color
-    activeDistributions[0].info.color = color;
+    distributions[activeDistribution[0]].info.color = color;
     ui.distributionColor1->show();
 
     draw();
@@ -108,7 +97,7 @@ void MainWindow::choose_color_2()
         ui.distributionColor2->setScene(new QGraphicsScene(ui.distributionColor2->rect(), this));
 
     //show new color
-    activeDistributions[1].info.color = color;
+    distributions[activeDistribution[1]].info.color = color;
     ui.distributionColor2->show();
 
     draw();
@@ -130,11 +119,13 @@ void MainWindow::draw()
 
     if (ui.checkBoxDrawReal->isChecked())
     {
+        setup_active_distributions_and_components();
+
         //draw info about first distribution
-        draw_distribution(activeDistributions[0], ui.graphicsView->scene());
+        draw_distribution(0, ui.graphicsView->scene());
 
         //draw info about second distribution
-        draw_distribution(activeDistributions[1], ui.graphicsView->scene());
+        draw_distribution(1, ui.graphicsView->scene());
     }
 }
 
@@ -149,37 +140,39 @@ void MainWindow::draw_axises(QGraphicsScene * scene)
 }
 
 //drawing all about (current) distribution
-void MainWindow::draw_distribution(ActiveDistribution & distribution, QGraphicsScene * scene)
+void MainWindow::draw_distribution(int activeDistributionNumber, QGraphicsScene * scene)
 {
     if (ui.checkBoxSelection->isChecked())
     {
         QPen pen;
-        pen.setColor(distribution.info.color);
+        pen.setColor(distributions[activeDistribution[activeDistributionNumber]].info.color);
         pen.setWidth(2);
 
-        draw_points(distribution.components, pen, scene);
+        draw_points(activeDistribution[activeDistributionNumber], pen, scene);
     }
 
     if (ui.checkBoxMiddle->isChecked())
-        draw_middle_point(distribution.info, scene);
+        draw_middle_point(activeDistribution[activeDistributionNumber], scene);
 
     if (ui.checkBoxIsolines->isChecked())
-        draw_isolines(distribution, scene);
+        draw_isolines(activeDistribution[activeDistributionNumber], scene);
 }
 
-void MainWindow::draw_ellipse(ActiveDistribution & distribution, QPainterPath &path, double p)
+void MainWindow::draw_ellipse(int activeDistributionNumber, QPainterPath &path, double p)
 {
     const int STEP_OF_GRID = 300;
 
-    double width = distribution.info.boundingRect.right() - distribution.info.boundingRect.left();
+    QRectF boundingRect(distributions[activeDistribution[activeDistributionNumber]].calculate_bounding_box(activeComponent[0], activeComponent[1]));
+
+    double width = boundingRect.right() - boundingRect.left();
     width /= static_cast<double>(STEP_OF_GRID);
-    double left = distribution.info.boundingRect.left();
+    double left = boundingRect.left();
 
     bool first = true;
     for (int i = 0; i <= STEP_OF_GRID; ++i)
     {
         double currentX = left + static_cast<double>(i)*width;
-        double currentY = distribution.info.calculate_y1(currentX, p);
+        double currentY = distributions[activeDistribution[activeDistributionNumber]].calculate_y1(activeComponent[0], activeComponent[1], r[activeDistributionNumber], currentX, p);
         if (unlikely(first))
         {
             if (!(isnan(currentY) || isinf(currentY)))
@@ -196,14 +189,14 @@ void MainWindow::draw_ellipse(ActiveDistribution & distribution, QPainterPath &p
     for (int i = STEP_OF_GRID; i >= 0; --i)
     {
         double currentX = left + static_cast<double>(i)*width;
-        double currentY = distribution.info.calculate_y2(currentX, p);
+        double currentY = distributions[activeDistribution[activeDistributionNumber]].calculate_y2(activeComponent[0], activeComponent[1], r[activeDistributionNumber], currentX, p);
         if (!(isnan(currentY) || isinf(currentY)))
             path.lineTo(plot_x(currentX), plot_y(currentY));
     }
     path.connectPath(path);
 }
 
-void MainWindow::draw_isolines(ActiveDistribution & distribution, QGraphicsScene * scene)
+void MainWindow::draw_isolines(int activeDistributionNumber, QGraphicsScene * scene)
 {
     QPen pen;
     pen.setColor(QColor(10, 155, 10, 255));
@@ -212,32 +205,37 @@ void MainWindow::draw_isolines(ActiveDistribution & distribution, QGraphicsScene
     QPainterPath path1;
     QPainterPath path2;
     QPainterPath path3;
-    draw_ellipse(distribution, path1, 0.3);
-    draw_ellipse(distribution, path2, 0.6);
-    draw_ellipse(distribution, path3, 0.9);
+    draw_ellipse(activeDistributionNumber, path1, 0.3);
+    draw_ellipse(activeDistributionNumber, path2, 0.6);
+    draw_ellipse(activeDistributionNumber, path3, 0.9);
     scene->addPath(path1, pen);
     scene->addPath(path2, pen);
     scene->addPath(path3, pen);
 }
 
-void MainWindow::draw_middle_point(DistributionInfo & distributionInfo, QGraphicsScene * scene)
+void MainWindow::draw_middle_point(int activeDistributionNumber, QGraphicsScene * scene)
 {
     QPen pen;
     pen.setColor(QColor(10, 155, 10, 255));
     pen.setWidth(2);
 
-    scene->addLine(plot_x(distributionInfo.middleX), plot_y(distributionInfo.middleY),
-                   plot_x(distributionInfo.middleX), plot_y(distributionInfo.middleY), pen);
+    scene->addLine(plot_x(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].info.middle[activeComponent[0]]),
+                   plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].info.middle[activeComponent[1]]),
+                   plot_x(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].info.middle[activeComponent[0]]),
+                   plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].info.middle[activeComponent[1]]), pen);
 }
 
-void MainWindow::draw_points(QVector<Components> &components, QPen & pen, QGraphicsScene * scene)
+void MainWindow::draw_points(int activeDistributionNumber, QPen & pen, QGraphicsScene * scene)
 {
-    if (components.isEmpty())
+    if (distributions.isEmpty())
         return;
 
-    for (int i = 0; i < components.size(); ++i)
-        scene->addLine(plot_x(components[i].x), plot_y(components[i].y),
-                       plot_x(components[i].x), plot_y(components[i].y), pen);
+    for (int i = 0; i < distributions[activeDistribution[activeDistributionNumber]].selection.vectors.size(); ++i)
+        scene->addLine(plot_x(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection.vectors[i].values[activeComponent[0]]),
+                       plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection.vectors[i].values[activeComponent[1]]),
+                       plot_x(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection.vectors[i].values[activeComponent[0]]),
+                       plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection.vectors[i].values[activeComponent[1]]),
+                       pen);
 }
 
 //generate selection
@@ -246,27 +244,22 @@ void MainWindow::generate()
     if (distributions.isEmpty())
         return;
 
-    if (!selections.isEmpty())
-        selections.clear();
-
-    selections.resize(distributions.size());
-
     selectionSize = ui.selectionDimention->value();
 
     //generate selections for all distributions
     for (int i = 0; i < distributions.size(); ++i)
     {
-        selections[i].distribution = i;
-        selections[i].vectors.resize(static_cast<int>(
-                static_cast<double>(selectionSize)*distributions[i].get_a_priori_probability()
+        distributions[i].selection.distribution = i;
+        distributions[i].selection.vectors.resize(static_cast<int>(
+                static_cast<double>(selectionSize)*distributions[i].parameters.get_a_priori_probability()
                 ));
 
         //generate random vectors with a given distribution
-        distributions[i].generate_selection(selections[i]);
+        distributions[i].parameters.generate_selection(distributions[i].selection);
 
         //set true distribution for all generated random vectors
-        for (int j = 0; j < selections[i].vectors.size(); ++j)
-            selections[i].vectors[j].trueDistribution = i;
+        for (int j = 0; j < distributions[i].selection.vectors.size(); ++j)
+            distributions[i].selection.vectors[j].trueDistribution = i;
     }
 
     selectionGenerated = true;
@@ -319,8 +312,6 @@ void MainWindow::load()
                                   QMessageBox::Ok);
 
             distributions.clear();
-            selections.clear();
-
             return;
         }
 
@@ -342,12 +333,12 @@ void MainWindow::load()
                 in >> b[j][k];
 
         //fill distribution with correct parameters
-        distributions[i].set_a(a);
-        distributions[i].set_a_priori_probability(a_priori_probability);
-        distributions[i].set_b(b);
+        distributions[i].parameters.set_a(a);
+        distributions[i].parameters.set_a_priori_probability(a_priori_probability);
+        distributions[i].parameters.set_b(b);
 
         //generate ||A|| matrix
-        if (!distributions[i].generate__a__(m))
+        if (!distributions[i].parameters.generate__a__(m))
         {
             //invalid matrix of correlations - let's say about it
             QMessageBox::critical(this, tr("Generation ||A|| failed"),
@@ -355,7 +346,6 @@ void MainWindow::load()
                                   QMessageBox::Ok);
             //clear memory
             distributions.clear();
-            selections.clear();
 
             //close input file
             in.close();
@@ -443,4 +433,13 @@ void MainWindow::setup_connections()
     connect(ui.checkBoxIsolines, SIGNAL(clicked()), this, SLOT(draw()));
     connect(ui.checkBoxMiddle, SIGNAL(clicked()), this, SLOT(draw()));
     connect(ui.checkBoxSelection, SIGNAL(clicked()), this, SLOT(draw()));
+}
+
+void MainWindow::setup_active_distributions_and_components()
+{
+    activeDistribution[0] = ui.distribution1->value() - 1;
+    activeDistribution[1] = ui.distribution2->value() - 1;
+
+    activeComponent[0] = ui.component1->value() - 1;
+    activeComponent[1] = ui.component2->value() - 1;
 }

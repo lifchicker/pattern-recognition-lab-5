@@ -4,9 +4,7 @@
 #include <QMainWindow>
 #include "ui_mainwindow.h"
 
-
 #include "distribution.h"
-#include "activedistribution.h"
 
 class QPainterPath;
 class QGraphicsScene;
@@ -31,23 +29,20 @@ private slots:
 private:
     void choose_color();
     void draw_axises(QGraphicsScene * scene);
-    void draw_distribution(ActiveDistribution & distribution, QGraphicsScene * scene);
-    void draw_ellipse(ActiveDistribution & distribution, QPainterPath &path, double p);
-    void draw_isolines(ActiveDistribution & distribution, QGraphicsScene * scene);
-    void draw_middle_point(DistributionInfo & distributionInfo, QGraphicsScene * scene);
-    void draw_points(QVector<Components> &components, QPen & pen, QGraphicsScene * scene);
+    void draw_distribution(int activeDistributionNumber, QGraphicsScene * scene);
+    void draw_ellipse(int activeDistributionNumber, QPainterPath &path, double p);
+    void draw_isolines(int activeDistributionNumber, QGraphicsScene * scene);
+    void draw_middle_point(int activeDistributionNumber, QGraphicsScene * scene);
+    void draw_points(int activeDistributionNumber, QPen & pen, QGraphicsScene * scene);
     double plot_x(double x);
     double plot_y(double y);
     void setup_connections();
+    void setup_active_distributions_and_components();
 
 private:
     Ui::MainWindowClass ui; //gui
 
-    //info about distributions: ||A|| matrix,
-    //matrix of correlations, vector of average values
     QVector<Distribution> distributions;
-
-    QVector<Selection> selections;
 
     //dimention of X
     int m;
@@ -58,8 +53,14 @@ private:
     //selection size
     int selectionSize;
 
-    //info about 2 current selected dustributions
-    ActiveDistribution activeDistributions[2];
+    //active distributions
+    int activeDistribution[2];
+
+    //active components of active distributions
+    int activeComponent[2];
+
+    double kxy[2];
+    double r[2];
 };
 
 #endif // MAINWINDOW_H

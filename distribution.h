@@ -2,67 +2,49 @@
 #define DISTRIBUTION_H
 
 #include "selection.h"
+#include "distributionparameters.h"
+
+#include <QVector>
+#include <QColor>
+#include <QRectF>
+
+struct DistributionInfo
+{
+    DistributionInfo() {}
+    DistributionInfo(const DistributionInfo & info)
+    {
+        middle = info.middle;
+        sigma = info.sigma;
+    }
+
+    QVector<double> middle;
+    QVector<double> sigma;
+
+    QColor color;
+};
 
 class Distribution
 {
 public:
     Distribution();
-    ~Distribution();
 
 public:
-    bool generate__a__(int _m);
-    void generate_normal_vector(double * vec);
-    void generate_vector(RandomVector & vec, double * tmpVector);
-    void generate_selection(Selection & selection);
+    QRectF calculate_bounding_box(int component1, int component2);
+    double calculate_correlation_of_components(int component1, int component2);
+    void calculate_distribution_info();
+    double calculate_y1(int component1, int component2, double r, double x, double p);
+    double calculate_y2(int component1, int component2, double r, double x, double p);
 
-    //setters
-    void set_a(double * _a);
-    void set_b(double ** _b);
+public:
+    //info about distributions: ||A|| matrix,
+    //matrix of correlations, vector of average values
+    DistributionParameters parameters;
 
-    inline void set_a_priori_probability(double _a_priori_probability)
-    {
-        a_priori_probability = _a_priori_probability;
-    }
+    //calculated info about distributions
+    DistributionInfo info;
 
-    //getters
-    inline const double * get_a() const
-    {
-        return a;
-    }
-
-    inline double get_a_priori_probability() const
-    {
-        return a_priori_probability;
-    }
-
-    inline double ** get_b()
-    {
-        return b;
-    }
-
-    inline void delete_array(double ** array)
-    {
-        for (int i = 0; i < m; ++i)
-            delete[] array[i];
-        delete[] array;
-        array = 0;
-    }
-
-private:
-    //vector of average values
-    double * a;
-
-    //matrix of correlations
-    double ** b;
-
-    //dimention of X
-    int m;
-
-    //generated data
-    // this is the ||A|| matrix
-    double ** __a__;
-
-    double a_priori_probability;
+    //generated selection
+    Selection selection;
 };
 
 #endif // DISTRIBUTION_H
