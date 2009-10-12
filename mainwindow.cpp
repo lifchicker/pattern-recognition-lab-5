@@ -234,6 +234,9 @@ void MainWindow::draw_points(int activeDistributionNumber, QPen & pen, QGraphics
     if (distributions.isEmpty())
         return;
 
+    if (distributions[activeDistribution[activeDistributionNumber]].selection.vectors.isEmpty())
+        return;
+
     for (int i = 0; i < distributions[activeDistribution[activeDistributionNumber]].selection.vectors.size(); ++i)
         scene->addLine(plot_x(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection.vectors[i].values[activeComponent[0]]),
                        plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection.vectors[i].values[activeComponent[1]]),
@@ -267,6 +270,8 @@ void MainWindow::generate()
     }
 
     selectionGenerated = true;
+
+    calculate_values();
 }
 
 //load distributions from file
