@@ -64,8 +64,8 @@ void Distribution::calculate_distribution_info()
 
     for (int i = 0; i < selection.vectors.size(); ++i)
     {
-        info.middle[i] /= static_cast<double>(selection.vectors[i].values.size());
-        info.sigma[i] /= static_cast<double>(selection.vectors[i].values.size());
+        info.middle[i] /= static_cast<double>(selection.vectors.size());
+        info.sigma[i] /= static_cast<double>(selection.vectors.size());
         info.sigma[i] = sqrt(info.sigma[i]);
     }
 
