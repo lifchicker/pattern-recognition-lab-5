@@ -39,8 +39,11 @@ void MainWindow::calculate_values()
     kxy[0] = distributions[activeDistribution[0]].calculate_correlation_of_components(activeComponent[0], activeComponent[1]);
     kxy[1] = distributions[activeDistribution[1]].calculate_correlation_of_components(activeComponent[0], activeComponent[1]);
 
-    r[0] = kxy[0]/(distributions[activeDistribution[0]].info.sigma[activeComponent[0]]*distributions[activeDistribution[0]].info.sigma[activeComponent[1]]);
-    r[1] = kxy[1]/(distributions[activeDistribution[1]].info.sigma[activeComponent[0]]*distributions[activeDistribution[1]].info.sigma[activeComponent[1]]);
+    r[0] = kxy[0]/(distributions[activeDistribution[0]].info.sigma[activeComponent[0]]
+                   *distributions[activeDistribution[0]].info.sigma[activeComponent[1]]);
+
+    r[1] = kxy[1]/(distributions[activeDistribution[1]].info.sigma[activeComponent[0]]
+                   *distributions[activeDistribution[1]].info.sigma[activeComponent[1]]);
 
     ui.labelMiddleX->setText(QString("%1").arg(distributions[activeDistribution[0]].info.middle[activeComponent[0]]));
     ui.labelMiddleY->setText(QString("%1").arg(distributions[activeDistribution[0]].info.middle[activeComponent[1]]));
@@ -168,7 +171,7 @@ void MainWindow::draw_ellipse(int activeDistributionNumber, QPainterPath &path, 
 
     QRectF boundingRect(distributions[activeDistribution[activeDistributionNumber]].calculate_bounding_box(activeComponent[0], activeComponent[1]));
 
-    double width = boundingRect.right() - boundingRect.left();
+    double width = boundingRect.width(); //boundingRect.right() - boundingRect.left();
     width /= static_cast<double>(STEP_OF_GRID);
     double left = boundingRect.left();
 

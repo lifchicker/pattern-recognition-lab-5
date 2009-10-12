@@ -59,17 +59,18 @@ void Distribution::calculate_distribution_info()
     }
 
     for (int i = 0; i < selection.vectors.size(); ++i)
+        info.middle[i] /= static_cast<double>(selection.vectors.size());
+
+
+    for (int i = 0; i < selection.vectors.size(); ++i)
         for (int j = 0; j < selection.vectors[i].values.size(); ++j)
                 info.sigma[j] += (selection.vectors[i].values[j] - info.middle[j])*(selection.vectors[i].values[j] - info.middle[j]);
 
     for (int i = 0; i < selection.vectors.size(); ++i)
     {
-        info.middle[i] /= static_cast<double>(selection.vectors.size());
         info.sigma[i] /= static_cast<double>(selection.vectors.size());
         info.sigma[i] = sqrt(info.sigma[i]);
     }
-
-    //info.r = info.kxy/(info.sigmaX*info.sigmaY);
 }
 
 double Distribution::calculate_y1(int component1, int component2, double r, double x, double p)
