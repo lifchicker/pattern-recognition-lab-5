@@ -62,6 +62,8 @@ void MainWindow::calculate_values()
 //setup color for the first distribution
 void MainWindow::choose_color_1()
 {
+    setup_active_distributions_and_components();
+
     //getting color
     QColor color = QColorDialog::getColor();
     if (!color.isValid())
@@ -84,6 +86,8 @@ void MainWindow::choose_color_1()
 //setup color for the second distribution
 void MainWindow::choose_color_2()
 {
+    setup_active_distributions_and_components();
+
     //getting color
     QColor color = QColorDialog::getColor();
     if (!color.isValid())
@@ -106,6 +110,8 @@ void MainWindow::choose_color_2()
 //drawing function
 void MainWindow::draw()
 {
+    setup_active_distributions_and_components();
+
     if (!selectionGenerated)
         return;
 
@@ -119,8 +125,6 @@ void MainWindow::draw()
 
     if (ui.checkBoxDrawReal->isChecked())
     {
-        setup_active_distributions_and_components();
-
         //draw info about first distribution
         draw_distribution(0, ui.graphicsView->scene());
 
