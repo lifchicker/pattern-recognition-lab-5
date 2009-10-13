@@ -5,7 +5,6 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     distribution.cpp \
     selection.cpp \
-    classifier.cpp \
     bayesianclassifier.cpp \
     distributionparameters.cpp
 HEADERS += mainwindow.h \
