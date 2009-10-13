@@ -193,7 +193,7 @@ void MainWindow::draw_ellipse(int activeDistributionNumber, QPainterPath &path, 
                 path.lineTo(plot_x(currentX), plot_y(currentY));
     }
 
-    for (int i = STEP_OF_GRID; i >= 0; --i)
+    for (int i = STEP_OF_GRID; --i; )
     {
         double currentX = left + static_cast<double>(i)*width;
         double currentY = distributions[activeDistribution[activeDistributionNumber]].calculate_y2(activeComponent[0], activeComponent[1], r[activeDistributionNumber], currentX, p);
