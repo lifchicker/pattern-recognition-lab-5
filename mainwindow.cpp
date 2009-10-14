@@ -1,9 +1,8 @@
 #include <QtGui>
-#include "mainwindow.h"
-
-#include "selection.h"
 
 #include <fstream>
+
+#include "mainwindow.h"
 
 #define likely(x)	__builtin_expect(!!(x), 1)
 #define unlikely(x)	__builtin_expect(!!(x), 0)
@@ -237,14 +236,14 @@ void MainWindow::draw_points(int activeDistributionNumber, QPen & pen, QGraphics
     if (distributions.isEmpty())
         return;
 
-    if (distributions[activeDistribution[activeDistributionNumber]].selection.vectors.isEmpty())
+    if (!distributions[activeDistribution[activeDistributionNumber]].selection.RowNo())
         return;
 
-    for (int i = 0; i < distributions[activeDistribution[activeDistributionNumber]].selection.vectors.size(); ++i)
-        scene->addLine(plot_x(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection.vectors[i].values[activeComponent[0]]),
-                       plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection.vectors[i].values[activeComponent[1]]),
-                       plot_x(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection.vectors[i].values[activeComponent[0]]),
-                       plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection.vectors[i].values[activeComponent[1]]),
+    for (size_t i = 0; i < distributions[activeDistribution[activeDistributionNumber]].selection.RowNo(); ++i)
+        scene->addLine(plot_x(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection(i, activeComponent[0])),
+                       plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection(i, activeComponent[1])),
+                       plot_x(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection(i, activeComponent[0])),
+                       plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection(i, activeComponent[1])),
                        pen);
 }
 
@@ -259,17 +258,18 @@ void MainWindow::generate()
     //generate selections for all distributions
     for (int i = 0; i < distributions.size(); ++i)
     {
-        distributions[i].selection.distribution = i;
-        distributions[i].selection.vectors.resize(static_cast<int>(
-                static_cast<double>(selectionSize)*distributions[i].parameters.get_a_priori_probability()
-                ));
+        int selection_size_for_current_distribution = static_cast<int>(static_cast<double>(selectionSize)*distributions[i].parameters.get_a_priori_probability());
+
+        distributions[i].selection.SetSize(selection_size_for_current_distribution, distributions[i].parameters.get_m());
+
+        distributions[i].selectionVectorsInfo.resize(selection_size_for_current_distribution);
 
         //generate random vectors with a given distribution
         distributions[i].parameters.generate_selection(distributions[i].selection);
 
         //set true distribution for all generated random vectors
-        for (int j = 0; j < distributions[i].selection.vectors.size(); ++j)
-            distributions[i].selection.vectors[j].trueDistribution = i;
+        for (int j = 0; j < distributions[i].selectionVectorsInfo.size(); ++j)
+            distributions[i].selectionVectorsInfo[j].trueDistribution = i;
     }
 
     selectionGenerated = true;

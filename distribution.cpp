@@ -10,19 +10,19 @@ QRectF Distribution::calculate_bounding_box(int component1, int component2)
 {
     QRectF boundingRect;
 
-    for (int i = 0; i < selection.vectors.size(); ++i)
+    for (size_t i = 0; i < selection.RowNo(); ++i)
     {
-        if (selection.vectors[i].values[component1] < boundingRect.left())
-            boundingRect.setLeft(selection.vectors[i].values[component1]);
+        if (selection(i, component1) < boundingRect.left())
+            boundingRect.setLeft(selection(i, component1));
 
-        if (selection.vectors[i].values[component1] > boundingRect.right())
-            boundingRect.setRight(selection.vectors[i].values[component1]);
+        if (selection(i, component1) > boundingRect.right())
+            boundingRect.setRight(selection(i, component1));
 
-        if (selection.vectors[i].values[component2] < boundingRect.bottom())
-            boundingRect.setBottom(selection.vectors[i].values[component2]);
+        if (selection(i, component2) < boundingRect.bottom())
+            boundingRect.setBottom(selection(i, component2));
 
-        if (selection.vectors[i].values[component2] >  boundingRect.top())
-            boundingRect.setTop(selection.vectors[i].values[component2]);
+        if (selection(i, component2) >  boundingRect.top())
+            boundingRect.setTop(selection(i, component2));
     }
 
     return boundingRect;
@@ -32,43 +32,43 @@ double Distribution::calculate_correlation_of_components(int component1, int com
 {
     double kxy = 0.0;
 
-    for (int i = 0; i < selection.vectors.size(); ++i)
-                kxy += (selection.vectors[i].values[component1] - info.middle[component1])*(selection.vectors[i].values[component2] - info.middle[component2]);
+    for (size_t i = 0; i < selection.RowNo(); ++i)
+                kxy += (selection(i, component1) - info.middle[component1])*(selection(i, component2) - info.middle[component2]);
 
-    kxy /= static_cast<double>(selection.vectors.size());
+    kxy /= static_cast<double>(selection.RowNo());
 
     return kxy;
 }
 
 void Distribution::calculate_distribution_info()
 {
-    if (selection.vectors.isEmpty())
+    if (!selection.RowNo())
         return;
 
     if (info.middle.isEmpty())
-        info.middle.resize(selection.vectors.size());
+        info.middle.resize(selection.RowNo());
 
     if (info.sigma.isEmpty())
-        info.sigma.resize(selection.vectors.size());
+        info.sigma.resize(selection.RowNo());
 
-    for (int i = 0; i < selection.vectors.size(); ++i)
+    for (size_t i = 0; i < selection.RowNo(); ++i)
     {
-        for (int j = 0; j < selection.vectors[i].values.size(); ++j)
-            info.middle[j] += selection.vectors[i].values[j];
+        for (size_t j = 0; j < selection.ColNo(); ++j)
+            info.middle[j] += selection(i, j);
 
     }
 
-    for (int i = 0; i < selection.vectors.size(); ++i)
-        info.middle[i] /= static_cast<double>(selection.vectors.size());
+    for (size_t i = 0; i < selection.RowNo(); ++i)
+        info.middle[i] /= static_cast<double>(selection.RowNo());
 
 
-    for (int i = 0; i < selection.vectors.size(); ++i)
-        for (int j = 0; j < selection.vectors[i].values.size(); ++j)
-                info.sigma[j] += (selection.vectors[i].values[j] - info.middle[j])*(selection.vectors[i].values[j] - info.middle[j]);
+    for (size_t i = 0; i < selection.RowNo(); ++i)
+        for (size_t j = 0; j < selection.ColNo(); ++j)
+                info.sigma[j] += (selection(i, j) - info.middle[j])*(selection(i, j) - info.middle[j]);
 
-    for (int i = 0; i < selection.vectors.size(); ++i)
+    for (size_t i = 0; i < selection.RowNo(); ++i)
     {
-        info.sigma[i] /= static_cast<double>(selection.vectors.size());
+        info.sigma[i] /= static_cast<double>(selection.RowNo());
         info.sigma[i] = sqrt(info.sigma[i]);
     }
 }

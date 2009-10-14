@@ -1,12 +1,14 @@
 #ifndef DISTRIBUTION_H
 #define DISTRIBUTION_H
 
-#include "selection.h"
 #include "distributionparameters.h"
 
 #include <QVector>
 #include <QColor>
 #include <QRectF>
+
+#include "matrix/include/matrix.h"
+using namespace math;
 
 struct DistributionInfo
 {
@@ -21,6 +23,12 @@ struct DistributionInfo
     QVector<double> sigma;
 
     QColor color;
+};
+
+struct RandomVectorInfo
+{
+    int trueDistribution;
+    int recognizedDistribution;
 };
 
 class Distribution
@@ -45,7 +53,9 @@ public:
     DistributionInfo info;
 
     //generated selection
-    Selection selection;
+    //Selection selection;
+    matrix<double> selection;
+    QVector<RandomVectorInfo> selectionVectorsInfo;
 };
 
 #endif // DISTRIBUTION_H

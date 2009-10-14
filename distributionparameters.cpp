@@ -1,6 +1,6 @@
 #include "distributionparameters.h"
 
-#include "selection.h"
+#include "matrix/include/matrix.h"
 
 #include <memory.h>
 #include <math.h>
@@ -90,13 +90,8 @@ void DistributionParameters::generate_normal_vector(double * vec)
 }
 
 // generate random vector with predefined partition law
-void DistributionParameters::generate_vector(RandomVector & vec, double * tmpVector)
+void DistributionParameters::generate_vector(math::matrix<double> & selection, int vec, double * tmpVector)
 {
-    if (!vec.values.isEmpty())
-        vec.values.clear();
-
-    vec.values.resize(m);
-
     generate_normal_vector(tmpVector);
 
     for (int i = 0; i < m; ++i)
@@ -104,27 +99,22 @@ void DistributionParameters::generate_vector(RandomVector & vec, double * tmpVec
         double stringSum = 0.0;
         for (int j = 0; j < m; ++j)
             stringSum += __a__[i][j]*tmpVector[j];
-        vec.values[i] = stringSum + a[i];
+        selection(vec, i) = stringSum + a[i];
     }
 
 }
 
 //generate new selection
-void DistributionParameters::generate_selection(Selection & selection)
+void DistributionParameters::generate_selection(math::matrix<double> & selection)
 {
-    //if we have no vectors to fill random values
-    if (selection.vectors.isEmpty())
-        //go back
-        return;
-
     //create temp vector wich will be contain normal vector
     //this is some sort of my optimization
     double * nv = new double[m];
 
     //for all vectors in current selection
     //generate vector with current distribution
-    for (int i = 0; i < selection.vectors.size(); ++i)
-        generate_vector(selection.vectors[i], nv);
+    for (size_t i = 0; i < selection.RowNo(); ++i)
+        generate_vector(selection, i, nv);
 
     //delete temp vector
     delete[] nv;

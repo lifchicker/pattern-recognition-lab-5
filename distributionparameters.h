@@ -1,8 +1,11 @@
 #ifndef DISTRIBUTIONPARAMETERS_H
 #define DISTRIBUTIONPARAMETERS_H
 
-class RandomVector;
-class Selection;
+namespace math
+{
+    template <class T>
+            class matrix;
+}
 
 class DistributionParameters
 {
@@ -15,8 +18,8 @@ public:
 
     bool generate__a__(int _m);
     void generate_normal_vector(double * vec);
-    void generate_vector(RandomVector & vec, double * tmpVector);
-    void generate_selection(Selection & selection);
+    void generate_vector(math::matrix<double> & selection, int vec, double * tmpVector);
+    void generate_selection(math::matrix<double> & selection);
 
     //setters
     void set_a(double * _a);
@@ -41,6 +44,11 @@ public:
     inline double ** get_b()
     {
         return b;
+    }
+
+    inline double get_m()
+    {
+        return m;
     }
 
     inline void delete_array(double ** array)
