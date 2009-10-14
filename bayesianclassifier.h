@@ -9,8 +9,8 @@ public:
     BayesianClassifier();
 
 public:
-    int classify(const RandomVector & vector, const QVector<Distribution> & distributions);
-    double g(const RandomVector & vector, const Distribution & distribution);
+    int classify(const math::matrix<double> & x, const QVector<Distribution> & distributions);
+    double g(const math::matrix<double> & x, const Distribution & distribution);
 };
 
 #endif // BAYESIANCLASSIFIER_H

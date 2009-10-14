@@ -1,10 +1,15 @@
 #ifndef CLASSIFIER_H
 #define CLASSIFIER_H
 
-class RandomVector;
+#include <QVector>
+
 class Distribution;
 
-#include <QVector>
+namespace math
+{
+    template <class T>
+            class matrix;
+}
 
 class Classifier
 {
@@ -13,10 +18,10 @@ public:
 
 public:
     //return distribution number wich belong generated vector
-    virtual int classify(const RandomVector & vector, const QVector<Distribution> & distributions) = 0;
+    virtual int classify(const math::matrix<double> & x, const QVector<Distribution> & distributions) = 0;
 
     //calculate g value
-    virtual double g(const RandomVector & vector, const Distribution & distribution) = 0;
+    virtual double g(const math::matrix<double> & x, const Distribution & distribution) = 0;
 };
 
 #endif // CLASSIFIER_H

@@ -6,7 +6,7 @@ BayesianClassifier::BayesianClassifier()
 {
 }
 
-int BayesianClassifier::classify(const RandomVector & vector, const QVector<Distribution> & distributions)
+int BayesianClassifier::classify(const math::matrix<double> & x, const QVector<Distribution> & distributions)
 {
     QVector<double> gi;
     gi.reserve(distributions.size());
@@ -15,7 +15,7 @@ int BayesianClassifier::classify(const RandomVector & vector, const QVector<Dist
 
     for (int i = 0; i < distributions.size(); ++i)
     {
-        gi[i] = g(vector, distributions[i]);
+        gi[i] = g(x, distributions[i]);
 
         if (gi[max] < gi[i])
             max = i;
@@ -24,6 +24,6 @@ int BayesianClassifier::classify(const RandomVector & vector, const QVector<Dist
     return max;
 }
 
-double BayesianClassifier::g(const RandomVector & vector, const Distribution & distribution)
+double BayesianClassifier::g(const math::matrix<double> & x, const Distribution & distribution)
 {
 }
