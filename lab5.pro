@@ -6,8 +6,7 @@ SOURCES += main.cpp \
     distribution.cpp \
     selection.cpp \
     bayesianclassifier.cpp \
-    distributionparameters.cpp \
-    mathfunctions.cpp
+    distributionparameters.cpp
 HEADERS += mainwindow.h \
     distribution.h \
     randomvector.h \
@@ -15,7 +14,7 @@ HEADERS += mainwindow.h \
     classifier.h \
     bayesianclassifier.h \
     distributionparameters.h \
-    mathfunctions.h
+    matrix/include/matrix.h
 FORMS += mainwindow.ui
 OTHER_FILES += README \
     .gitignore

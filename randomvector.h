@@ -6,20 +6,20 @@
 class RandomVector
 {
 public:
-    RandomVector():trueDistribution(0),recognitionedDistribution(0) {}
+    RandomVector():trueDistribution(0),recognizedDistribution(0) {}
 
     RandomVector(const RandomVector &vec)
     {
         values = vec.values;
         trueDistribution = vec.trueDistribution;
-        recognitionedDistribution = vec.recognitionedDistribution;
+        recognizedDistribution = vec.recognizedDistribution;
     }
 
 public:
     QVector<double> values;
     
     int trueDistribution;
-    int recognitionedDistribution;
+    int recognizedDistribution;
 };
 
 #endif // RANDOMVECTOR_H
