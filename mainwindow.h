@@ -35,7 +35,7 @@ private:
     void draw_ellipse(int activeDistributionNumber, QPainterPath &path, double p);
     void draw_isolines(int activeDistributionNumber, QGraphicsScene * scene);
     void draw_middle_point(int activeDistributionNumber, QGraphicsScene * scene);
-    void draw_points(int activeDistributionNumber, QPen & pen, QGraphicsScene * scene);
+    void draw_points(int activeDistributionNumber, QGraphicsScene * scene);
     double plot_x(double x);
     double plot_y(double y);
     void setup_connections();

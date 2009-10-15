@@ -158,13 +158,7 @@ void MainWindow::draw_axises(QGraphicsScene * scene)
 void MainWindow::draw_distribution(int activeDistributionNumber, QGraphicsScene * scene)
 {
     if (ui.checkBoxSelection->isChecked())
-    {
-        QPen pen;
-        pen.setColor(distributions[activeDistribution[activeDistributionNumber]].info.color);
-        pen.setWidth(2);
-
-        draw_points(activeDistribution[activeDistributionNumber], pen, scene);
-    }
+        draw_points(activeDistribution[activeDistributionNumber], scene);
 
     if (ui.checkBoxMiddle->isChecked())
         draw_middle_point(activeDistribution[activeDistributionNumber], scene);
@@ -240,7 +234,7 @@ void MainWindow::draw_middle_point(int activeDistributionNumber, QGraphicsScene 
                    plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].info.middle[activeComponent[1]]), pen);
 }
 
-void MainWindow::draw_points(int activeDistributionNumber, QPen & pen, QGraphicsScene * scene)
+void MainWindow::draw_points(int activeDistributionNumber, QGraphicsScene * scene)
 {
     if (distributions.isEmpty())
         return;
@@ -248,12 +242,25 @@ void MainWindow::draw_points(int activeDistributionNumber, QPen & pen, QGraphics
     if (!distributions[activeDistribution[activeDistributionNumber]].selection.RowNo())
         return;
 
+    QPen pen;
+    pen.setWidth(2);
+
     for (size_t i = 0; i < distributions[activeDistribution[activeDistributionNumber]].selection.RowNo(); ++i)
+    {
+        //wrong recognized points draw in red color
+        if (ui.checkBoxRecognized->isChecked() &&
+            (distributions[activeDistribution[activeDistributionNumber]].selectionVectorsInfo[i].recognizedDistribution !=
+             distributions[activeDistribution[activeDistributionNumber]].selectionVectorsInfo[i].trueDistribution))
+            pen.setColor(QColor(255, 0, 0, 255));
+        else
+            pen.setColor(distributions[activeDistribution[activeDistributionNumber]].info.color);
+
         scene->addLine(plot_x(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection(i, activeComponent[0])),
                        plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection(i, activeComponent[1])),
                        plot_x(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection(i, activeComponent[0])),
                        plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection(i, activeComponent[1])),
                        pen);
+    }
 }
 
 //generate selection

@@ -924,7 +924,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>60</y>
+        <y>80</y>
         <width>181</width>
         <height>21</height>
        </rect>
@@ -940,7 +940,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>80</y>
+        <y>100</y>
         <width>181</width>
         <height>21</height>
        </rect>
@@ -995,6 +995,19 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="checked">
        <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBoxRecognized">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>60</y>
+        <width>221</width>
+        <height>19</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Отображать результат распознавания</string>
       </property>
      </widget>
     </widget>
