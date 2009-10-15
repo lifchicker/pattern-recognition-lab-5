@@ -5,6 +5,7 @@
 #include "ui_mainwindow.h"
 
 #include "distribution.h"
+#include "classifier.h"
 
 class QPainterPath;
 class QGraphicsScene;
@@ -24,6 +25,7 @@ private slots:
     void draw();
     void generate();
     void load();
+    void recognize();
     void save_selection();
 
 private:
@@ -61,6 +63,8 @@ private:
 
     double kxy[2];
     double r[2];
+
+    Classifier * classifier;
 };
 
 #endif // MAINWINDOW_H

@@ -22,6 +22,8 @@ struct DistributionInfo
     QVector<double> middle;
     QVector<double> sigma;
 
+    matrix<double> E;
+
     QColor color;
 };
 
@@ -40,6 +42,7 @@ public:
     QRectF calculate_bounding_box(int component1, int component2);
     double calculate_correlation_of_components(int component1, int component2);
     void calculate_distribution_info();
+    void calculate_E();
 
     double calculate_y1(int component1, int component2, double r, double x, double p);
     double calculate_y2(int component1, int component2, double r, double x, double p);

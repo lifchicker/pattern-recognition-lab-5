@@ -7,8 +7,11 @@
 #define likely(x)	__builtin_expect(!!(x), 1)
 #define unlikely(x)	__builtin_expect(!!(x), 0)
 
+#include "bayesianclassifier.h"
+
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
-    : QMainWindow(parent, flags)
+    : QMainWindow(parent, flags), m(0), selectionGenerated(false),
+    selectionSize(0), classifier(NULL)
 {
     ui.setupUi(this);
 
@@ -19,6 +22,12 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
 
 MainWindow::~MainWindow()
 {
+    if (classifier)
+    {
+        delete classifier;
+        classifier = NULL;
+    }
+
 }
 
 void MainWindow::calculate_values()
@@ -395,6 +404,41 @@ double MainWindow::plot_y(double y)
     return -y*static_cast<double>(ui.zoomY->value())*10.0;
 }
 
+void MainWindow::recognize()
+{
+    if (classifier)
+        delete classifier;
+
+    switch (ui.classifierTypeComboBox->currentIndex())
+    {
+        case 0:
+        {
+            classifier = new BayesianClassifier();
+        }
+        break;
+
+        default:
+        QMessageBox::critical(this, tr("Choosing of classifier type failed"),
+                              tr("Selected classifier not implemented! Choose another one."),
+                              QMessageBox::Ok);
+        return;
+    }
+
+    for (int i = 0; i < distributions.size(); ++i)
+        distributions[i].calculate_E();
+
+    matrix<double> tempX;
+    for (int i = 0; i < distributions.size(); ++i)
+        for (size_t j = 0; j < distributions[i].selection.RowNo(); ++j)
+        {
+            for (size_t k = 0; k < distributions[i].selection.ColNo(); ++k)
+                tempX(0, k) = distributions[i].selection(j, k);
+
+            distributions[i].selectionVectorsInfo[j].recognizedDistribution =
+                    classifier->classify(tempX, distributions);
+        }
+}
+
 //save generated selection to file
 void MainWindow::save_selection()
 {
@@ -429,6 +473,9 @@ void MainWindow::setup_connections()
 
     //connect button for generate selection
     connect(ui.generateButton, SIGNAL(clicked()), this, SLOT(generate()));
+
+    //connect button for recognizing
+    connect(ui.recognizeButton, SIGNAL(clicked()), this, SLOT(recognize()));
 
     //connect button for calculate values
     connect(ui.drawButton, SIGNAL(clicked()), this, SLOT(calculate_values()));

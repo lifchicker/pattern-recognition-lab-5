@@ -46,7 +46,7 @@ public:
         return b;
     }
 
-    inline double get_m()
+    inline int get_m()
     {
         return m;
     }

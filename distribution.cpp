@@ -71,6 +71,18 @@ void Distribution::calculate_distribution_info()
         info.sigma[i] /= static_cast<double>(selection.RowNo());
         info.sigma[i] = sqrt(info.sigma[i]);
     }
+
+    calculate_E();
+}
+
+void Distribution::calculate_E()
+{
+    //size of E must be mxm
+    info.E.SetSize(selection.ColNo(), selection.ColNo());
+
+    for (size_t i = 0; i < selection.ColNo(); ++i)
+        for (size_t j = 0; i < selection.ColNo(); ++j)
+            info.E(i, j) = calculate_correlation_of_components(i, j);
 }
 
 double Distribution::calculate_y1(int component1, int component2, double r, double x, double p)
