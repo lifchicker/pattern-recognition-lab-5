@@ -285,7 +285,10 @@ void MainWindow::generate()
 
         //set true distribution for all generated random vectors
         for (int j = 0; j < distributions[i].selectionVectorsInfo.size(); ++j)
+        {
             distributions[i].selectionVectorsInfo[j].trueDistribution = i;
+            distributions[i].selectionVectorsInfo[j].trueDistribution = 65535;
+        }
     }
 
     selectionGenerated = true;
