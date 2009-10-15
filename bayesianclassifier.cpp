@@ -26,4 +26,11 @@ int BayesianClassifier::classify(const math::matrix<double> & x, const QVector<D
 
 double BayesianClassifier::g(const math::matrix<double> & x, const Distribution & distribution)
 {
+    //          1        T  -1
+    // gi(x) = --(x - mi) Ei  (x - mi) + Ln P(wi) + ci
+    //          2
+
+    //ci = -(1/2)Ln 2PI - (1/2) Ln |Ei|
+
+
 }

@@ -46,10 +46,10 @@ void Distribution::calculate_distribution_info()
         return;
 
     if (info.middle.isEmpty())
-        info.middle.resize(selection.RowNo());
+        info.middle.resize(selection.ColNo());
 
     if (info.sigma.isEmpty())
-        info.sigma.resize(selection.RowNo());
+        info.sigma.resize(selection.ColNo());
 
     for (size_t i = 0; i < selection.RowNo(); ++i)
     {
@@ -58,7 +58,7 @@ void Distribution::calculate_distribution_info()
 
     }
 
-    for (size_t i = 0; i < selection.RowNo(); ++i)
+    for (size_t i = 0; i < selection.ColNo(); ++i)
         info.middle[i] /= static_cast<double>(selection.RowNo());
 
 
@@ -66,7 +66,7 @@ void Distribution::calculate_distribution_info()
         for (size_t j = 0; j < selection.ColNo(); ++j)
                 info.sigma[j] += (selection(i, j) - info.middle[j])*(selection(i, j) - info.middle[j]);
 
-    for (size_t i = 0; i < selection.RowNo(); ++i)
+    for (size_t i = 0; i < selection.ColNo(); ++i)
     {
         info.sigma[i] /= static_cast<double>(selection.RowNo());
         info.sigma[i] = sqrt(info.sigma[i]);
@@ -81,7 +81,7 @@ void Distribution::calculate_E()
     info.E.SetSize(selection.ColNo(), selection.ColNo());
 
     for (size_t i = 0; i < selection.ColNo(); ++i)
-        for (size_t j = 0; i < selection.ColNo(); ++j)
+        for (size_t j = 0; j < selection.ColNo(); ++j)
             info.E(i, j) = calculate_correlation_of_components(i, j);
 }
 
