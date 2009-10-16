@@ -33,7 +33,7 @@ double Distribution::calculate_correlation_of_components(int component1, int com
     double kxy = 0.0;
 
     for (size_t i = 0; i < selection.RowNo(); ++i)
-                kxy += (selection(i, component1) - info.middle[component1])*(selection(i, component2) - info.middle[component2]);
+                kxy += (selection(i, component1) - info.middle(0, component1))*(selection(i, component2) - info.middle(0, component2));
 
     kxy /= static_cast<double>(selection.RowNo());
 
@@ -45,31 +45,28 @@ void Distribution::calculate_distribution_info()
     if (!selection.RowNo())
         return;
 
-    if (info.middle.isEmpty())
-        info.middle.resize(selection.ColNo());
-
-    if (info.sigma.isEmpty())
-        info.sigma.resize(selection.ColNo());
+    info.middle.SetSize(1, selection.ColNo());
+    info.sigma.SetSize(1, selection.ColNo());
 
     for (size_t i = 0; i < selection.RowNo(); ++i)
     {
         for (size_t j = 0; j < selection.ColNo(); ++j)
-            info.middle[j] += selection(i, j);
+            info.middle(0, j) += selection(i, j);
 
     }
 
     for (size_t i = 0; i < selection.ColNo(); ++i)
-        info.middle[i] /= static_cast<double>(selection.RowNo());
+        info.middle(0, i) /= static_cast<double>(selection.RowNo());
 
 
     for (size_t i = 0; i < selection.RowNo(); ++i)
         for (size_t j = 0; j < selection.ColNo(); ++j)
-                info.sigma[j] += (selection(i, j) - info.middle[j])*(selection(i, j) - info.middle[j]);
+                info.sigma(0, j) += (selection(i, j) - info.middle(0, j))*(selection(i, j) - info.middle(0, j));
 
     for (size_t i = 0; i < selection.ColNo(); ++i)
     {
-        info.sigma[i] /= static_cast<double>(selection.RowNo());
-        info.sigma[i] = sqrt(info.sigma[i]);
+        info.sigma(0, i) /= static_cast<double>(selection.RowNo());
+        info.sigma(0, i) = sqrt(info.sigma(0, i));
     }
 
     calculate_E();
@@ -87,10 +84,10 @@ void Distribution::calculate_E()
 
 double Distribution::calculate_y1(int component1, int component2, double r, double x, double p)
 {
-    double sigmaX = info.sigma[component1];
-    double sigmaY = info.sigma[component2];
-    double middleX = info.middle[component1];
-    double middleY = info.middle[component2];
+    double sigmaX = info.sigma(0, component1);
+    double sigmaY = info.sigma(0, component2);
+    double middleX = info.middle(0, component1);
+    double middleY = info.middle(0, component2);
 
     double sx2 = sigmaX*sigmaX;
     double sy2 = sigmaY*sigmaY;
@@ -107,10 +104,10 @@ double Distribution::calculate_y1(int component1, int component2, double r, doub
 
 double Distribution::calculate_y2(int component1, int component2, double r, double x, double p)
 {
-    double sigmaX = info.sigma[component1];
-    double sigmaY = info.sigma[component2];
-    double middleX = info.middle[component1];
-    double middleY = info.middle[component2];
+    double sigmaX = info.sigma(0, component1);
+    double sigmaY = info.sigma(0, component2);
+    double middleX = info.middle(0, component1);
+    double middleY = info.middle(0, component2);
 
     double sx2 = sigmaX*sigmaX;
     double sy2 = sigmaY*sigmaY;

@@ -2,6 +2,8 @@
 
 #include "distribution.h"
 
+#include <math.h>
+
 BayesianClassifier::BayesianClassifier()
 {
 }
@@ -32,5 +34,18 @@ double BayesianClassifier::g(const math::matrix<double> & x, const Distribution 
 
     //ci = -(1/2)Ln 2PI - (1/2) Ln |Ei|
 
+    matrix<double> result(1, 1);
+    double ci;
+    double lp;
 
+    result = (-0.5)*(((~(x - distribution.info.middle))*(!distribution.info.E))*(x - distribution.info.middle));
+
+    if ((result.ColNo() != 1) && (result.RowNo() != 1))
+        REPORT_ERROR("Result matrix have dimentions are not 1");
+
+//    lp =
+
+    ci = (-0.5)*log(2*M_PI) - 0.5*log(distribution.info.E.Det());
+
+    return result(1, 1) + ci;
 }

@@ -19,8 +19,8 @@ struct DistributionInfo
         sigma = info.sigma;
     }
 
-    QVector<double> middle;
-    QVector<double> sigma;
+    matrix<double> middle;
+    matrix<double> sigma;
 
     matrix<double> E;
 

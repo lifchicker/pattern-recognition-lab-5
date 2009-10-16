@@ -47,23 +47,23 @@ void MainWindow::calculate_values()
     kxy[0] = distributions[activeDistribution[0]].calculate_correlation_of_components(activeComponent[0], activeComponent[1]);
     kxy[1] = distributions[activeDistribution[1]].calculate_correlation_of_components(activeComponent[0], activeComponent[1]);
 
-    r[0] = kxy[0]/(distributions[activeDistribution[0]].info.sigma[activeComponent[0]]
-                   *distributions[activeDistribution[0]].info.sigma[activeComponent[1]]);
+    r[0] = kxy[0]/(distributions[activeDistribution[0]].info.sigma(0, activeComponent[0])
+                   *distributions[activeDistribution[0]].info.sigma(0, activeComponent[1]));
 
-    r[1] = kxy[1]/(distributions[activeDistribution[1]].info.sigma[activeComponent[0]]
-                   *distributions[activeDistribution[1]].info.sigma[activeComponent[1]]);
+    r[1] = kxy[1]/(distributions[activeDistribution[1]].info.sigma(0, activeComponent[0])
+                   *distributions[activeDistribution[1]].info.sigma(0, activeComponent[1]));
 
-    ui.labelMiddleX->setText(QString("%1").arg(distributions[activeDistribution[0]].info.middle[activeComponent[0]]));
-    ui.labelMiddleY->setText(QString("%1").arg(distributions[activeDistribution[0]].info.middle[activeComponent[1]]));
-    ui.labelSigmaX->setText(QString("%1").arg(distributions[activeDistribution[0]].info.sigma[activeComponent[0]]));
-    ui.labelSigmaY->setText(QString("%1").arg(distributions[activeDistribution[0]].info.sigma[activeComponent[1]]));
+    ui.labelMiddleX->setText(QString("%1").arg(distributions[activeDistribution[0]].info.middle(0, activeComponent[0])));
+    ui.labelMiddleY->setText(QString("%1").arg(distributions[activeDistribution[0]].info.middle(0, activeComponent[1])));
+    ui.labelSigmaX->setText(QString("%1").arg(distributions[activeDistribution[0]].info.sigma(0, activeComponent[0])));
+    ui.labelSigmaY->setText(QString("%1").arg(distributions[activeDistribution[0]].info.sigma(0, activeComponent[1])));
     ui.labelKxy->setText(QString("%1").arg(kxy[0]));
     ui.labelR->setText(QString("%1").arg(r[0]));
 
-    ui.labelMiddleX_2->setText(QString("%1").arg(distributions[activeDistribution[1]].info.middle[activeComponent[0]]));
-    ui.labelMiddleY_2->setText(QString("%1").arg(distributions[activeDistribution[1]].info.middle[activeComponent[1]]));
-    ui.labelSigmaX_2->setText(QString("%1").arg(distributions[activeDistribution[1]].info.sigma[activeComponent[0]]));
-    ui.labelSigmaY_2->setText(QString("%1").arg(distributions[activeDistribution[1]].info.sigma[activeComponent[1]]));
+    ui.labelMiddleX_2->setText(QString("%1").arg(distributions[activeDistribution[1]].info.middle(0, activeComponent[0])));
+    ui.labelMiddleY_2->setText(QString("%1").arg(distributions[activeDistribution[1]].info.middle(0, activeComponent[1])));
+    ui.labelSigmaX_2->setText(QString("%1").arg(distributions[activeDistribution[1]].info.sigma(0, activeComponent[0])));
+    ui.labelSigmaY_2->setText(QString("%1").arg(distributions[activeDistribution[1]].info.sigma(0, activeComponent[1])));
     ui.labelKxy_2->setText(QString("%1").arg(kxy[1]));
     ui.labelR_2->setText(QString("%1").arg(r[1]));
 
@@ -228,10 +228,10 @@ void MainWindow::draw_middle_point(int activeDistributionNumber, QGraphicsScene 
     pen.setColor(QColor(10, 155, 10, 255));
     pen.setWidth(2);
 
-    scene->addLine(plot_x(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].info.middle[activeComponent[0]]),
-                   plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].info.middle[activeComponent[1]]),
-                   plot_x(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].info.middle[activeComponent[0]]),
-                   plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].info.middle[activeComponent[1]]), pen);
+    scene->addLine(plot_x(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].info.middle(0, activeComponent[0])),
+                   plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].info.middle(0, activeComponent[1])),
+                   plot_x(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].info.middle(0, activeComponent[0])),
+                   plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].info.middle(0, activeComponent[1])), pen);
 }
 
 void MainWindow::draw_points(int activeDistributionNumber, QGraphicsScene * scene)
@@ -437,7 +437,8 @@ void MainWindow::recognize()
     for (int i = 0; i < distributions.size(); ++i)
         distributions[i].calculate_E();
 
-    matrix<double> tempX;
+    matrix<double> tempX(1, distributions[0].parameters.get_m());
+
     for (int i = 0; i < distributions.size(); ++i)
         for (size_t j = 0; j < distributions[i].selection.RowNo(); ++j)
         {
@@ -501,6 +502,7 @@ void MainWindow::setup_connections()
     connect(ui.checkBoxDrawReal, SIGNAL(clicked()), this, SLOT(draw()));
     connect(ui.checkBoxIsolines, SIGNAL(clicked()), this, SLOT(draw()));
     connect(ui.checkBoxMiddle, SIGNAL(clicked()), this, SLOT(draw()));
+    connect(ui.checkBoxRecognized, SIGNAL(clicked()), this, SLOT(draw()));
     connect(ui.checkBoxSelection, SIGNAL(clicked()), this, SLOT(draw()));
 }
 
