@@ -287,7 +287,7 @@ void MainWindow::generate()
         for (int j = 0; j < distributions[i].selectionVectorsInfo.size(); ++j)
         {
             distributions[i].selectionVectorsInfo[j].trueDistribution = i;
-            distributions[i].selectionVectorsInfo[j].trueDistribution = 65535;
+            distributions[i].selectionVectorsInfo[j].recognizedDistribution = 65535;
         }
     }
 
