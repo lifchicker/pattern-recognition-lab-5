@@ -46,9 +46,9 @@ double BayesianClassifier::g(const math::matrix<double> & x, const Distribution 
     if ((result.ColNo() != 1) && (result.RowNo() != 1))
         REPORT_ERROR("Result matrix have dimentions are not 1");
 
-//    lp =
+    lp = log(distribution.parameters.get_a_priori_probability());
 
     ci = (-0.5)*log(2*M_PI) - 0.5*log(distribution.info.E.Det());
 
-    return result(0, 0) + ci;
+    return result(0, 0) + lp + ci;
 }

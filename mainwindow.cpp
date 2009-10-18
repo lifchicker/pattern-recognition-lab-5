@@ -30,6 +30,19 @@ MainWindow::~MainWindow()
 
 }
 
+double MainWindow::calculate_classification_error_probability()
+{
+    int error = 0;
+
+    for (int i = 0; i < distributions.size(); ++i)
+        for (int j = 0; j < distributions[i].selectionVectorsInfo.size(); ++j)
+            if (distributions[i].selectionVectorsInfo[j].recognizedDistribution !=
+                distributions[i].selectionVectorsInfo[j].trueDistribution)
+                error++;
+
+    return static_cast<double>(error)/static_cast<double>(ui.selectionDimention->value());
+}
+
 void MainWindow::calculate_values()
 {
     if (distributions.isEmpty())
@@ -448,6 +461,8 @@ void MainWindow::recognize()
             distributions[i].selectionVectorsInfo[j].recognizedDistribution =
                     classifier->classify(tempX, distributions);
         }
+
+    ui.labelClassificationErrorRisk->setText(QString("%1").arg(calculate_classification_error_probability()));
 }
 
 //save generated selection to file

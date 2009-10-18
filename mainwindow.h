@@ -29,6 +29,7 @@ private slots:
     void save_selection();
 
 private:
+    double calculate_classification_error_probability();
     void choose_color();
     void draw_axises(QGraphicsScene * scene);
     void draw_distribution(int activeDistributionNumber, QGraphicsScene * scene);
