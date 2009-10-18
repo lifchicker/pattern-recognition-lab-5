@@ -292,8 +292,14 @@ private:
 	    for (size_t i=0; i < row; i++)
 	    {
 		Val[i] = new T [col];
-		if (v) memcpy( Val[i], v[i], rowlen);
+//modified:
+        if (v)
+            memcpy( Val[i], v[i], rowlen);
+        else
+            for (size_t j = 0; j < col; ++j)
+                Val[i][j] = T(0);
 	    }
+
 	}
 	~base_mat ()
 	{

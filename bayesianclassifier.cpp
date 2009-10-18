@@ -14,18 +14,24 @@ int BayesianClassifier::classify(const math::matrix<double> & x, const QVector<D
     gi.resize(distributions.size());
 
     int max = 0;
-    int size = distributions.size();
 
     for (int i = 0; i < distributions.size(); ++i)
     {
-        double result = g(x, distributions[i]);
-        gi[i] = result;
+        gi[i] = g(x, distributions[i]);
 
         if (gi[max] < gi[i])
             max = i;
     }
 
     return max;
+}
+
+double BayesianClassifier::calculate_mahalanobis_distance(const math::matrix<double> & x, const Distribution & distribution)
+{
+    //return ((-0.5)*(((x - distribution.info.middle)*(!distribution.info.E))*(~(x - distribution.info.middle))))(0,0);
+    return (-0.5*(((x - distribution.parameters.get_a())*(!distribution.parameters.get_b()))*(~(x - distribution.parameters.get_a()))))(0,0);
+    //return (-0.5*(((x - distribution.parameters.get_a())*(!distribution.info.E))*(~(x - distribution.parameters.get_a()))))(0,0);
+    //return (-0.5*(((x - distribution.info.middle)*(!distribution.parameters.get_b()))*(~(x - distribution.info.middle))))(0,0);
 }
 
 double BayesianClassifier::g(const math::matrix<double> & x, const Distribution & distribution)
@@ -36,19 +42,14 @@ double BayesianClassifier::g(const math::matrix<double> & x, const Distribution 
 
     //ci = -(1/2)Ln 2PI - (1/2) Ln |Ei|
 
-    matrix<double> result(1, 1);
-    double ci;
-    double lp;
+    double distance, lp, ci;
 
-    //result = (-0.5)*(((~(x - distribution.info.middle))*(!distribution.info.E))*(x - distribution.info.middle));
-    result = (-0.5)*(((x - distribution.info.middle)*(!distribution.info.E))*(~(x - distribution.info.middle)));
-
-    if ((result.ColNo() != 1) && (result.RowNo() != 1))
-        REPORT_ERROR("Result matrix have dimentions are not 1");
+    distance = calculate_mahalanobis_distance(x, distribution);
 
     lp = log(distribution.parameters.get_a_priori_probability());
 
-    ci = (-0.5)*log(2*M_PI) - 0.5*log(distribution.info.E.Det());
+    ci = -0.5*log(2*M_PI) - log(distribution.parameters.get_b().Det());
+    //ci = -0.5*log(2*M_PI) - log(distribution.info.E.Det());
 
-    return result(0, 0) + lp + ci;
+    return distance + lp + ci;
 }

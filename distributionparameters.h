@@ -1,11 +1,8 @@
 #ifndef DISTRIBUTIONPARAMETERS_H
 #define DISTRIBUTIONPARAMETERS_H
 
-namespace math
-{
-    template <class T>
-            class matrix;
-}
+#include "matrix/include/matrix.h"
+using namespace math;
 
 class DistributionParameters
 {
@@ -22,8 +19,8 @@ public:
     void generate_selection(math::matrix<double> & selection);
 
     //setters
-    void set_a(double * _a);
-    void set_b(double ** _b);
+    void set_a(math::matrix<double> _a);
+    void set_b(math::matrix<double> _b);
 
     inline void set_a_priori_probability(double _a_priori_probability)
     {
@@ -31,7 +28,7 @@ public:
     }
 
     //getters
-    inline const double * get_a() const
+    inline matrix<double> get_a() const
     {
         return a;
     }
@@ -41,37 +38,29 @@ public:
         return a_priori_probability;
     }
 
-    inline double ** get_b()
+    inline matrix<double> get_b() const
     {
         return b;
     }
 
-    inline int get_m()
+    inline int get_m() const
     {
         return m;
     }
 
-    inline void delete_array(double ** array)
-    {
-        for (int i = 0; i < m; ++i)
-            delete[] array[i];
-        delete[] array;
-        array = 0;
-    }
-
 private:
     //vector of average values
-    double * a;
+    matrix<double> a;
 
     //matrix of correlations
-    double ** b;
+    matrix<double> b;
 
     //dimention of X
     int m;
 
     //generated data
     // this is the ||A|| matrix
-    double ** __a__;
+    matrix<double> __a__;
 
     double a_priori_probability;
 };

@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include "ui_mainwindow.h"
 
+#include "transformationmatrixdialog.h"
+
 #include "distribution.h"
 #include "classifier.h"
 
@@ -27,9 +29,12 @@ private slots:
     void load();
     void recognize();
     void save_selection();
+    void show_transformation_matrix();
+    void transformationMatrixDialogDestroyed();
 
 private:
     double calculate_classification_error_probability();
+    matrix<int> calculate_transformation_matrix();
     void choose_color();
     void draw_axises(QGraphicsScene * scene);
     void draw_distribution(int activeDistributionNumber, QGraphicsScene * scene);
@@ -44,6 +49,8 @@ private:
 
 private:
     Ui::MainWindowClass ui; //gui
+
+    TransformationMatrixDialog * transformationMatrixDialog;
 
     QVector<Distribution> distributions;
 

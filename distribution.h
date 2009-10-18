@@ -1,11 +1,11 @@
 #ifndef DISTRIBUTION_H
 #define DISTRIBUTION_H
 
-#include "distributionparameters.h"
-
 #include <QVector>
 #include <QColor>
 #include <QRectF>
+
+#include "distributionparameters.h"
 
 #include "matrix/include/matrix.h"
 using namespace math;

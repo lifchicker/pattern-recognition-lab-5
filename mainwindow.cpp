@@ -10,7 +10,8 @@
 #include "bayesianclassifier.h"
 
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
-    : QMainWindow(parent, flags), m(0), selectionGenerated(false),
+    : QMainWindow(parent, flags), transformationMatrixDialog(NULL),
+    m(0), selectionGenerated(false),
     selectionSize(0), classifier(NULL)
 {
     ui.setupUi(this);
@@ -28,6 +29,11 @@ MainWindow::~MainWindow()
         classifier = NULL;
     }
 
+    if (transformationMatrixDialog)
+    {
+        delete transformationMatrixDialog;
+        transformationMatrixDialog = NULL;    }
+
 }
 
 double MainWindow::calculate_classification_error_probability()
@@ -41,6 +47,23 @@ double MainWindow::calculate_classification_error_probability()
                 error++;
 
     return static_cast<double>(error)/static_cast<double>(ui.selectionDimention->value());
+}
+
+matrix<int> MainWindow::calculate_transformation_matrix()
+{
+    matrix<int> transformationMatrix(distributions.size(), distributions.size());
+//    for ( i = 0; i < transformationMatrix.ColNo(); ++i)
+//        for (int j = 0; j < transformationMatrix.RowNo(); ++j)
+//            transformationMatrix(i, j) = 0;
+
+    for (int i = 0; i < distributions.size(); ++i)
+        for (int j = 0; j < distributions.size(); ++j)
+            for (int k = 0; k < distributions[j].selectionVectorsInfo.size(); ++k)
+                if (distributions[j].selectionVectorsInfo[k].recognizedDistribution == i)
+                    transformationMatrix(i, j)++;
+                //transformationMatrix(i, distributions[j].selectionVectorsInfo[k].recognizedDistribution)++;
+
+    return transformationMatrix;
 }
 
 void MainWindow::calculate_values()
@@ -360,21 +383,15 @@ void MainWindow::load()
         }
 
         //allocate memory for vector of average values
-        double * a = new (double[m]);
+        matrix<double> a(1, m);
 
         //load vector of average values
-        for (int j = 0; j < m; ++j)
-            in >> a[j];
+        in >> a;
 
-        //allocate memory for matrix of correlations
-        double ** b = new (double*[m]);
-        for (int k = 0; k < m; ++k)
-            b[k] = new (double[m]);
+        matrix<double> b(m, m);
 
         //load matrix of correlations
-        for (int j = 0; j < m; ++j)
-            for (int k = 0; k < m; ++k)
-                in >> b[j][k];
+        in >> b;
 
         //fill distribution with correct parameters
         distributions[i].parameters.set_a(a);
@@ -385,8 +402,8 @@ void MainWindow::load()
         if (!distributions[i].parameters.generate__a__(m))
         {
             //invalid matrix of correlations - let's say about it
-            QMessageBox::critical(this, tr("Generation ||A|| failed"),
-                                  QString("Invalid matrix of correlations #%1!").arg(i),
+            QMessageBox::critical(this, tr("Generation of ||A|| failed"),
+                                  QString("Invalid matrix of correlations #%1!").arg(i+1),
                                   QMessageBox::Ok);
             //clear memory
             distributions.clear();
@@ -519,6 +536,9 @@ void MainWindow::setup_connections()
     connect(ui.checkBoxMiddle, SIGNAL(clicked()), this, SLOT(draw()));
     connect(ui.checkBoxRecognized, SIGNAL(clicked()), this, SLOT(draw()));
     connect(ui.checkBoxSelection, SIGNAL(clicked()), this, SLOT(draw()));
+
+    //connect button click action to transformationMatrixDialog show action
+    connect(ui.transformationButton, SIGNAL(clicked()), this, SLOT(show_transformation_matrix()));
 }
 
 void MainWindow::setup_active_distributions_and_components()
@@ -528,4 +548,22 @@ void MainWindow::setup_active_distributions_and_components()
 
     activeComponent[0] = ui.component1->value() - 1;
     activeComponent[1] = ui.component2->value() - 1;
+}
+
+void MainWindow::show_transformation_matrix()
+{
+    if (transformationMatrixDialog)
+    {
+        delete transformationMatrixDialog;
+        transformationMatrixDialog = NULL;
+    }
+
+    transformationMatrixDialog = new TransformationMatrixDialog(calculate_transformation_matrix());
+    connect(transformationMatrixDialog, SIGNAL(destroyed()), this, SLOT(transformationMatrixDialogDestroyed()));
+    transformationMatrixDialog->show();
+}
+
+void MainWindow::transformationMatrixDialogDestroyed()
+{
+    transformationMatrixDialog = NULL;
 }
