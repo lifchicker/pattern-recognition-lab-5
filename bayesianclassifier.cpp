@@ -28,8 +28,8 @@ int BayesianClassifier::classify(const math::matrix<double> & x, const QVector<D
 
 double BayesianClassifier::calculate_mahalanobis_distance(const math::matrix<double> & x, const Distribution & distribution)
 {
-    //return ((-0.5)*(((x - distribution.info.middle)*(!distribution.info.E))*(~(x - distribution.info.middle))))(0,0);
-    return (-0.5*(((x - distribution.parameters.get_a())*(!distribution.parameters.get_b()))*(~(x - distribution.parameters.get_a()))))(0,0);
+    return ((-0.5)*(((x - distribution.info.middle)*(!distribution.info.E))*(~(x - distribution.info.middle))))(0,0);
+    //return (-0.5*(((x - distribution.parameters.get_a())*(!distribution.parameters.get_b()))*(~(x - distribution.parameters.get_a()))))(0,0);
     //return (-0.5*(((x - distribution.parameters.get_a())*(!distribution.info.E))*(~(x - distribution.parameters.get_a()))))(0,0);
     //return (-0.5*(((x - distribution.info.middle)*(!distribution.parameters.get_b()))*(~(x - distribution.info.middle))))(0,0);
 }
@@ -48,8 +48,8 @@ double BayesianClassifier::g(const math::matrix<double> & x, const Distribution 
 
     lp = log(distribution.parameters.get_a_priori_probability());
 
-    ci = -0.5*log(2*M_PI) - log(distribution.parameters.get_b().Det());
-    //ci = -0.5*log(2*M_PI) - log(distribution.info.E.Det());
+    //ci = -0.5*log(2*M_PI) - log(distribution.parameters.get_b().Det());
+    ci = -0.5*log(2*M_PI) - log(distribution.info.E.Det());
 
     return distance + lp + ci;
 }
