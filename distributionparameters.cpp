@@ -7,9 +7,15 @@ using namespace math;
 #include <math.h>
 #include <stdlib.h>
 
+#if defined(__WIN32__)
+double drand48()
+{
+    return static_cast<double>(rand())/static_cast<double>(RAND_MAX);
+}
+#endif
+
 DistributionParameters::DistributionParameters()
-        :a(NULL), b(NULL),
-        m(0), __a__(NULL)
+        :m(0)
 {
 }
 
@@ -66,7 +72,7 @@ void DistributionParameters::generate_vector(math::matrix<double> & selection, i
     for (int i = 0; i < m; ++i)
     {
         double stringSum = 0.0;
-        for (size_t j = 0; j <= i; ++j)
+        for (int j = 0; j <= i; ++j)
             stringSum += __a__(i, j)*tmpVector[j];
         selection(vec, i) = stringSum + a(0, i);
     }
