@@ -4,6 +4,7 @@
 
 #include "mainwindow.h"
 
+//this definitions given from linux kernel source
 #define likely(x)	__builtin_expect(!!(x), 1)
 #define unlikely(x)	__builtin_expect(!!(x), 0)
 
@@ -32,8 +33,8 @@ MainWindow::~MainWindow()
     if (transformationMatrixDialog)
     {
         delete transformationMatrixDialog;
-        transformationMatrixDialog = NULL;    }
-
+        transformationMatrixDialog = NULL;
+    }
 }
 
 double MainWindow::calculate_classification_error_probability()
@@ -52,16 +53,12 @@ double MainWindow::calculate_classification_error_probability()
 matrix<int> MainWindow::calculate_transformation_matrix()
 {
     matrix<int> transformationMatrix(distributions.size(), distributions.size());
-//    for ( i = 0; i < transformationMatrix.ColNo(); ++i)
-//        for (int j = 0; j < transformationMatrix.RowNo(); ++j)
-//            transformationMatrix(i, j) = 0;
 
     for (int i = 0; i < distributions.size(); ++i)
         for (int j = 0; j < distributions.size(); ++j)
             for (int k = 0; k < distributions[j].selectionVectorsInfo.size(); ++k)
                 if (distributions[j].selectionVectorsInfo[k].recognizedDistribution == i)
                     transformationMatrix(i, j)++;
-                //transformationMatrix(i, distributions[j].selectionVectorsInfo[k].recognizedDistribution)++;
 
     return transformationMatrix;
 }
@@ -209,7 +206,7 @@ void MainWindow::draw_ellipse(int activeDistributionNumber, QPainterPath &path, 
 
     QRectF boundingRect(distributions[activeDistribution[activeDistributionNumber]].calculate_bounding_box(activeComponent[0], activeComponent[1]));
 
-    double width = boundingRect.width(); //boundingRect.right() - boundingRect.left();
+    double width = boundingRect.width();
     width /= static_cast<double>(STEP_OF_GRID);
     double left = boundingRect.left();
 
