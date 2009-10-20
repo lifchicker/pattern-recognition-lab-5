@@ -14,6 +14,14 @@ double drand48()
 }
 #endif
 
+double random_with_probability_distribution()
+{
+    double res = 0.0;
+    for (int i = 0; i < 12; ++i)
+        res += drand48();
+    return res - 6.0;
+}
+
 DistributionParameters::DistributionParameters()
         :m(0)
 {
@@ -61,7 +69,7 @@ void DistributionParameters::generate_normal_vector(double * vec)
         return;
 
     for (int i = 0; i < m; ++i)
-        vec[i] = drand48();
+        vec[i] = random_with_probability_distribution();
 }
 
 // generate random vector with predefined partition law
