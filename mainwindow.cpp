@@ -541,6 +541,8 @@ void MainWindow::setup_connections()
 
     //connect button click action to transformationMatrixDialog show action
     connect(ui.transformationButton, SIGNAL(clicked()), this, SLOT(show_transformation_matrix()));
+    connect(ui.showCorrelationMatrixPushButton1, SIGNAL(clicked()), this, SLOT(show_matrix_of_correlations1()));
+    connect(ui.showCorrelationMatrixPushButton2, SIGNAL(clicked()), this, SLOT(show_matrix_of_correlations2()));
 }
 
 void MainWindow::setup_active_distributions_and_components()
@@ -550,6 +552,38 @@ void MainWindow::setup_active_distributions_and_components()
 
     activeComponent[0] = ui.component1->value() - 1;
     activeComponent[1] = ui.component2->value() - 1;
+}
+
+void MainWindow::show_matrix_of_correlations1()
+{
+    setup_active_distributions_and_components();
+
+    FormWithTable * formWithMatrixOfCorrelationsCalculated = new FormWithTable(distributions[activeDistribution[0]].info.E);
+    FormWithTable * formWithMatrixOfCorrelationsLoaded = new FormWithTable(distributions[activeDistribution[0]].parameters.get_b());
+
+    formWithMatrixOfCorrelationsCalculated->setWindowTitle("Calculated matrix of correlations");
+    formWithMatrixOfCorrelationsLoaded->setWindowTitle("Loaded matrix of correlations");
+
+    connect(formWithMatrixOfCorrelationsLoaded, SIGNAL(destroyed()), formWithMatrixOfCorrelationsCalculated, SLOT(close()));
+
+    formWithMatrixOfCorrelationsCalculated->show();
+    formWithMatrixOfCorrelationsLoaded->show();
+}
+
+void MainWindow::show_matrix_of_correlations2()
+{
+    setup_active_distributions_and_components();
+
+    FormWithTable * formWithMatrixOfCorrelationsCalculated = new FormWithTable(distributions[activeDistribution[1]].info.E);
+    FormWithTable * formWithMatrixOfCorrelationsLoaded = new FormWithTable(distributions[activeDistribution[1]].parameters.get_b());
+
+    formWithMatrixOfCorrelationsCalculated->setWindowTitle("Calculated matrix of correlations");
+    formWithMatrixOfCorrelationsLoaded->setWindowTitle("Loaded matrix of correlations");
+
+    connect(formWithMatrixOfCorrelationsLoaded, SIGNAL(destroyed()), formWithMatrixOfCorrelationsCalculated, SLOT(close()));
+
+    formWithMatrixOfCorrelationsCalculated->show();
+    formWithMatrixOfCorrelationsLoaded->show();
 }
 
 void MainWindow::show_transformation_matrix()

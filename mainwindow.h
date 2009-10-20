@@ -29,6 +29,8 @@ private slots:
     void load();
     void recognize();
     void save_selection();
+    void show_matrix_of_correlations1();
+    void show_matrix_of_correlations2();
     void show_transformation_matrix();
     void formWithTableDestroyed();
 

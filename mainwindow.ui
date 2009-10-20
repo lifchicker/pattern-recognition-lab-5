@@ -539,7 +539,7 @@ p, li { white-space: pre-wrap; }
         <x>0</x>
         <y>10</y>
         <width>171</width>
-        <height>141</height>
+        <height>181</height>
        </rect>
       </property>
       <property name="title">
@@ -723,6 +723,20 @@ p, li { white-space: pre-wrap; }
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
+      <widget class="QPushButton" name="showCorrelationMatrixPushButton1">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>137</y>
+         <width>151</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Показать 
+матрицу корреляций</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QGroupBox" name="groupBox_2">
       <property name="geometry">
@@ -730,7 +744,7 @@ p, li { white-space: pre-wrap; }
         <x>180</x>
         <y>10</y>
         <width>171</width>
-        <height>141</height>
+        <height>181</height>
        </rect>
       </property>
       <property name="title">
@@ -914,12 +928,26 @@ p, li { white-space: pre-wrap; }
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
+      <widget class="QPushButton" name="showCorrelationMatrixPushButton2">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>137</y>
+         <width>151</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Показать
+матрицу корреляций</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QGroupBox" name="groupBox_4">
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>160</y>
+        <y>190</y>
         <width>351</width>
         <height>91</height>
        </rect>

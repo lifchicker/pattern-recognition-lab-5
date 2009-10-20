@@ -18,6 +18,7 @@ class FormWithTable : public QWidget {
 public:
     FormWithTable(QWidget *parent = 0);
     FormWithTable(math::matrix<int> inputMatrix, QWidget *parent = 0);
+    FormWithTable(math::matrix<double> inputMatrix, QWidget *parent = 0);
     ~FormWithTable();
 
 private:
