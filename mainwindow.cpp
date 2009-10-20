@@ -11,7 +11,7 @@
 #include "bayesianclassifier.h"
 
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags)
-    : QMainWindow(parent, flags), transformationMatrixDialog(NULL),
+    : QMainWindow(parent, flags), formForVisualizationMatrices(NULL),
     m(0), selectionGenerated(false),
     selectionSize(0), classifier(NULL)
 {
@@ -30,10 +30,10 @@ MainWindow::~MainWindow()
         classifier = NULL;
     }
 
-    if (transformationMatrixDialog)
+    if (formForVisualizationMatrices)
     {
-        delete transformationMatrixDialog;
-        transformationMatrixDialog = NULL;
+        delete formForVisualizationMatrices;
+        formForVisualizationMatrices = NULL;
     }
 }
 
@@ -296,6 +296,11 @@ void MainWindow::draw_points(int activeDistributionNumber, QGraphicsScene * scen
     }
 }
 
+void MainWindow::formWithTableDestroyed()
+{
+    formForVisualizationMatrices = NULL;
+}
+
 //generate selection
 void MainWindow::generate()
 {
@@ -549,18 +554,14 @@ void MainWindow::setup_active_distributions_and_components()
 
 void MainWindow::show_transformation_matrix()
 {
-    if (transformationMatrixDialog)
+    if (formForVisualizationMatrices)
     {
-        delete transformationMatrixDialog;
-        transformationMatrixDialog = NULL;
+        delete formForVisualizationMatrices;
+        formForVisualizationMatrices = NULL;
     }
 
-    transformationMatrixDialog = new TransformationMatrixDialog(calculate_transformation_matrix());
-    connect(transformationMatrixDialog, SIGNAL(destroyed()), this, SLOT(transformationMatrixDialogDestroyed()));
-    transformationMatrixDialog->show();
-}
-
-void MainWindow::transformationMatrixDialogDestroyed()
-{
-    transformationMatrixDialog = NULL;
+    formForVisualizationMatrices = new FormWithTable(calculate_transformation_matrix());
+    connect(formForVisualizationMatrices, SIGNAL(destroyed()), this, SLOT(formWithTableDestroyed()));
+    formForVisualizationMatrices->setWindowTitle(tr("Transformation matrix"));
+    formForVisualizationMatrices->show();
 }

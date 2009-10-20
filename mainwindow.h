@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include "ui_mainwindow.h"
 
-#include "transformationmatrixdialog.h"
+#include "formwithtable.h"
 
 #include "distribution.h"
 #include "classifier.h"
@@ -30,7 +30,7 @@ private slots:
     void recognize();
     void save_selection();
     void show_transformation_matrix();
-    void transformationMatrixDialogDestroyed();
+    void formWithTableDestroyed();
 
 private:
     double calculate_classification_error_probability();
@@ -50,7 +50,7 @@ private:
 private:
     Ui::MainWindowClass ui; //gui
 
-    TransformationMatrixDialog * transformationMatrixDialog;
+    FormWithTable * formForVisualizationMatrices;
 
     QVector<Distribution> distributions;
 

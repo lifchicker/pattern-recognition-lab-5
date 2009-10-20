@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TransformationMatrixDialog</class>
- <widget class="QDialog" name="TransformationMatrixDialog">
+ <class>FormWithTable</class>
+ <widget class="QWidget" name="FormWithTable">
   <property name="windowModality">
    <enum>Qt::ApplicationModal</enum>
   </property>
@@ -14,9 +14,9 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Матрица трансформации</string>
+   <string>Form</string>
   </property>
-  <widget class="QTableWidget" name="transformationMatrixTableWidget">
+  <widget class="QTableWidget" name="tableWidget">
    <property name="geometry">
     <rect>
      <x>10</x>

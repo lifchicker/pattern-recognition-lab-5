@@ -6,15 +6,15 @@ SOURCES += main.cpp \
     distribution.cpp \
     bayesianclassifier.cpp \
     distributionparameters.cpp \
-    transformationmatrixdialog.cpp
+    formwithtable.cpp
 HEADERS += mainwindow.h \
     distribution.h \
     classifier.h \
     bayesianclassifier.h \
     distributionparameters.h \
     matrix/include/matrix.h \
-    transformationmatrixdialog.h
+    formwithtable.h
 FORMS += mainwindow.ui \
-    transformationmatrixdialog.ui
+    formwithtable.ui
 OTHER_FILES += README \
     .gitignore
