@@ -26,9 +26,32 @@ int BayesianClassifier::classify(const math::matrix<double> & x, const QVector<D
     return max;
 }
 
+double BayesianClassifier::calculate_recognition_error(const math::matrix<double> & x, const QVector<Distribution> & distributions,
+                                                       const matrix<double> & regretMatrix)
+{
+    double R = 0.0;
+
+    bool first = true;
+    for (size_t i = 0; i < regretMatrix.RowNo(); ++i)
+    {
+        double tR = 0.0;
+
+        for (int j = 0; j < distributions.size(); ++j)
+            tR += regretMatrix(i, j)*g(x, distributions[j]);
+
+        if (first)
+            R = tR;
+
+        if (R > tR)
+            R = tR;
+    }
+
+    return -R;
+}
+
 double BayesianClassifier::calculate_mahalanobis_distance(const math::matrix<double> & x, const Distribution & distribution)
 {
-    return ((-0.5)*(((x - distribution.info.middle)*(!distribution.info.E))*(~(x - distribution.info.middle))))(0,0);
+    return (((x - distribution.info.middle)*(!distribution.info.E))*(~(x - distribution.info.middle)))(0,0);
     //return (-0.5*(((x - distribution.parameters.get_a())*(!distribution.parameters.get_b()))*(~(x - distribution.parameters.get_a()))))(0,0);
     //return (-0.5*(((x - distribution.parameters.get_a())*(!distribution.info.E))*(~(x - distribution.parameters.get_a()))))(0,0);
     //return (-0.5*(((x - distribution.info.middle)*(!distribution.parameters.get_b()))*(~(x - distribution.info.middle))))(0,0);
@@ -44,12 +67,11 @@ double BayesianClassifier::g(const math::matrix<double> & x, const Distribution 
 
     double distance, lp, ci;
 
-    distance = calculate_mahalanobis_distance(x, distribution);
+    distance = -0.5*calculate_mahalanobis_distance(x, distribution);
 
     lp = log(distribution.parameters.get_a_priori_probability());
 
-    //ci = -0.5*log(2*M_PI) - log(distribution.parameters.get_b().Det());
-    ci = -0.5*log(2*M_PI) - log(distribution.info.E.Det());
+    ci = -0.5*(log(2*M_PI) + log(distribution.info.E.Det()));
 
     return distance + lp + ci;
 }

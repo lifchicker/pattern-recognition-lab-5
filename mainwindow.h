@@ -27,6 +27,7 @@ private slots:
     void draw();
     void generate();
     void load();
+    void load_regret_matrix();
     void recognize();
     void save_selection();
     void show_matrix_of_correlations1();
@@ -36,6 +37,7 @@ private slots:
 
 private:
     double calculate_classification_error_probability();
+    void calculate_middle_risk();
     matrix<int> calculate_transformation_matrix();
     void choose_color();
     void draw_axises(QGraphicsScene * scene);
@@ -55,6 +57,9 @@ private:
     FormWithTable * formForVisualizationMatrices;
 
     QVector<Distribution> distributions;
+
+    //regret matrix
+    matrix<double> regretMatrix;
 
     //dimention of X
     int m;

@@ -949,7 +949,7 @@ p, li { white-space: pre-wrap; }
         <x>0</x>
         <y>190</y>
         <width>351</width>
-        <height>91</height>
+        <height>131</height>
        </rect>
       </property>
       <property name="title">
@@ -958,7 +958,7 @@ p, li { white-space: pre-wrap; }
       <widget class="QLabel" name="label_21">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>2</x>
          <y>20</y>
          <width>271</width>
          <height>18</height>
@@ -987,7 +987,7 @@ p, li { white-space: pre-wrap; }
       <widget class="QLabel" name="label_23">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>2</x>
          <y>40</y>
          <width>261</width>
          <height>18</height>
@@ -1018,12 +1018,27 @@ p, li { white-space: pre-wrap; }
         <rect>
          <x>10</x>
          <y>60</y>
-         <width>261</width>
-         <height>28</height>
+         <width>181</width>
+         <height>41</height>
         </rect>
        </property>
        <property name="text">
-        <string>Показать матрицу трансформаций</string>
+        <string>Показать
+матрицу трансформаций</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="loadRegretMatrixPushButton">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>60</y>
+         <width>141</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Загрузить
+матрицу потерь</string>
        </property>
       </widget>
      </widget>

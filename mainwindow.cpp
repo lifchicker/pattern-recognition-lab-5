@@ -50,6 +50,27 @@ double MainWindow::calculate_classification_error_probability()
     return static_cast<double>(error)/static_cast<double>(ui.selectionDimention->value());
 }
 
+void MainWindow::calculate_middle_risk()
+{
+    double middleRisk = 0.0;
+    int count = 0;
+    matrix<double> tempX(1, distributions[0].parameters.get_m());
+
+    for (int i = 0; i < distributions.size(); ++i)
+        for (size_t j = 0; j < distributions[i].selection.RowNo(); ++j)
+        {
+            for (size_t k = 0; k < distributions[i].selection.ColNo(); ++k)
+                tempX(0, k) = distributions[i].selection(j, k);
+
+            middleRisk += classifier->calculate_recognition_error(tempX, distributions, regretMatrix);
+            count++;
+        }
+
+    middleRisk /= static_cast<double>(count);
+
+    ui.labelMiddleRisk->setText(QString("%1").arg(middleRisk));
+}
+
 matrix<int> MainWindow::calculate_transformation_matrix()
 {
     matrix<int> transformationMatrix(distributions.size(), distributions.size());
@@ -353,6 +374,16 @@ void MainWindow::load()
     int numberOfDistributions;
     in >> numberOfDistributions;
 
+    //create a regret matrix
+    regretMatrix.SetSize(numberOfDistributions, numberOfDistributions);
+    for (int i = 0; i < numberOfDistributions; ++i)
+        for (int j = 0; j < numberOfDistributions; ++j)
+            if (unlikely(i == j))
+                regretMatrix(i, j) = 0.0;
+            else
+                regretMatrix(i, j) = 1.0;
+
+
     //get dimention of X
     in >> m;
 
@@ -433,6 +464,28 @@ void MainWindow::load()
     selectionGenerated = false;
 }
 
+void MainWindow::load_regret_matrix()
+{
+    //getting name of the file with info about distributions
+    QString filename = QFileDialog::getOpenFileName(this, tr("Select the input file"));
+
+    if (filename.isEmpty())
+        return;
+
+    //open file
+    std::fstream in;
+    in.open(filename.toAscii().data(), std::ios_base::in);
+    if (!in.is_open())
+        return;
+
+    in >> regretMatrix;
+
+    //close input file
+    in.close();
+
+    calculate_middle_risk();
+}
+
 //get transformed x coordinate
 double MainWindow::plot_x(double x)
 {
@@ -482,6 +535,8 @@ void MainWindow::recognize()
         }
 
     ui.labelClassificationErrorRisk->setText(QString("%1").arg(calculate_classification_error_probability()));
+
+    calculate_middle_risk();
 }
 
 //save generated selection to file
