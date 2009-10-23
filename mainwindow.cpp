@@ -383,7 +383,6 @@ void MainWindow::load()
             else
                 regretMatrix(i, j) = 1.0;
 
-
     //get dimention of X
     in >> m;
 
@@ -567,6 +566,9 @@ void MainWindow::setup_connections()
 
     //connect button for load distributions from file
     connect(ui.loadButton, SIGNAL(clicked()), this, SLOT(load()));
+
+    //connect button for load regret matrix
+    connect(ui.loadRegretMatrixPushButton, SIGNAL(clicked()), this, SLOT(load_regret_matrix()));
 
     //connect button for saving selection
     connect(ui.buttonSaveSelection, SIGNAL(clicked()), this, SLOT(save_selection()));

@@ -26,8 +26,9 @@ int BayesianClassifier::classify(const math::matrix<double> & x, const QVector<D
     return max;
 }
 
-double BayesianClassifier::calculate_recognition_error(const math::matrix<double> & x, const QVector<Distribution> & distributions,
-                                                       const matrix<double> & regretMatrix)
+double BayesianClassifier::calculate_recognition_error(const math::matrix<double> & x,
+                                                       const QVector<Distribution> & distributions,
+                                                       const math::matrix<double> & regretMatrix)
 {
     double R = 0.0;
 
@@ -40,7 +41,10 @@ double BayesianClassifier::calculate_recognition_error(const math::matrix<double
             tR += regretMatrix(i, j)*g(x, distributions[j]);
 
         if (first)
+        {
             R = tR;
+            first = false;
+        }
 
         if (R > tR)
             R = tR;
@@ -49,12 +53,13 @@ double BayesianClassifier::calculate_recognition_error(const math::matrix<double
     return -R;
 }
 
-double BayesianClassifier::calculate_mahalanobis_distance(const math::matrix<double> & x, const Distribution & distribution)
+double BayesianClassifier::calculate_mahalanobis_distance(const math::matrix<double> & x,
+                                                          const Distribution & distribution)
 {
     return (((x - distribution.info.middle)*(!distribution.info.E))*(~(x - distribution.info.middle)))(0,0);
-    //return (-0.5*(((x - distribution.parameters.get_a())*(!distribution.parameters.get_b()))*(~(x - distribution.parameters.get_a()))))(0,0);
-    //return (-0.5*(((x - distribution.parameters.get_a())*(!distribution.info.E))*(~(x - distribution.parameters.get_a()))))(0,0);
-    //return (-0.5*(((x - distribution.info.middle)*(!distribution.parameters.get_b()))*(~(x - distribution.info.middle))))(0,0);
+    //return (((x - distribution.parameters.get_a())*(!distribution.parameters.get_b()))*(~(x - distribution.parameters.get_a())))(0,0);
+    //return (((x - distribution.parameters.get_a())*(!distribution.info.E))*(~(x - distribution.parameters.get_a())))(0,0);
+    //return (((x - distribution.info.middle)*(!distribution.parameters.get_b()))*(~(x - distribution.info.middle)))(0,0);
 }
 
 double BayesianClassifier::g(const math::matrix<double> & x, const Distribution & distribution)
