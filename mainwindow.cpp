@@ -541,6 +541,15 @@ void MainWindow::recognize()
 //save generated selection to file
 void MainWindow::save_selection()
 {
+    bool ok;
+    int i = QInputDialog::getInt(this, tr("Distribution selection for saving"),
+                                 tr("Input distribution number:"), 1, 1, distributions.size()+1, 1, &ok);
+    if (!ok)
+        return;
+
+    //decrease distribution number (needed for correct use in vector addressation)
+    i--;
+
     //get name of the file to save selection in
     QString filename = QFileDialog::getSaveFileName(this, tr("Save selection to..."));
 
@@ -553,7 +562,11 @@ void MainWindow::save_selection()
     if (!out.is_open())
         return;
 
-    //TODO: code for saving selection to file must be here
+    if (i == distributions.size())
+        for (int j = 0; j < distributions.size(); ++j)
+            out << distributions[j].selection;
+    else
+        out << distributions[i].selection;
 
     out.close();
 }
