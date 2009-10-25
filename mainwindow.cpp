@@ -542,7 +542,14 @@ void MainWindow::recognize()
 void MainWindow::save_selection()
 {
     bool ok;
-    int i = QInputDialog::getInt(this, tr("Distribution selection for saving"),
+    bool withTeacher = false;
+
+    int i = QMessageBox::question(this, tr("With teacher?"),
+                                  tr("Do you want save selections with teacher hint?"), QMessageBox::Ok, QMessageBox::Cancel);
+    if (i == QMessageBox::Ok)
+        withTeacher = true;
+
+    i = QInputDialog::getInt(this, tr("Distribution selection for saving"),
                                  tr("Input distribution number:"), 1, 1, distributions.size()+1, 1, &ok);
     if (!ok)
         return;
@@ -562,11 +569,32 @@ void MainWindow::save_selection()
     if (!out.is_open())
         return;
 
-    if (i == distributions.size())
-        for (int j = 0; j < distributions.size(); ++j)
-            out << distributions[j].selection;
+    if (!withTeacher)
+    {
+        if (i == distributions.size())
+            for (int j = 0; j < distributions.size(); ++j)
+                out << distributions[j].selection;
+        else
+            out << distributions[i].selection;
+    }
     else
-        out << distributions[i].selection;
+    {
+        int first = 0, last = 0;
+
+        if (i == distributions.size())
+            last = distributions.size();
+        else
+            { first = i; last = i+1; }
+
+        for (int j = first; j < last; ++j)
+            for (size_t k = 0; k < distributions[j].selection.RowNo(); ++k)
+            {
+                for (size_t l = 0; l < distributions[j].selection.ColNo(); ++l)
+                    out << distributions[j].selection(k, l) << "    ";
+
+                out << distributions[j].selectionVectorsInfo[k].trueDistribution << endl;
+            }
+    }
 
     out.close();
 }
