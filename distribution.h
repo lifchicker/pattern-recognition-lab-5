@@ -2,7 +2,6 @@
 #define DISTRIBUTION_H
 
 #include <QVector>
-#include <QColor>
 #include <QRectF>
 
 #include "distributionparameters.h"
@@ -23,8 +22,6 @@ struct DistributionInfo
     matrix<double> sigma;
 
     matrix<double> E;
-
-    QColor color;
 };
 
 struct RandomVectorInfo

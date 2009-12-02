@@ -1,4 +1,5 @@
 #include <QtGui>
+#include <QColor>
 
 #include <fstream>
 
@@ -142,7 +143,7 @@ void MainWindow::choose_color_1()
         ui.distributionColor1->setScene(new QGraphicsScene(ui.distributionColor1->rect(), this));
 
     //set and show new color
-    distributions[activeDistribution[0]].info.color = color;
+    actualColors[0] = color;
     ui.distributionColor1->show();
 
     draw();
@@ -166,7 +167,7 @@ void MainWindow::choose_color_2()
         ui.distributionColor2->setScene(new QGraphicsScene(ui.distributionColor2->rect(), this));
 
     //show new color
-    distributions[activeDistribution[1]].info.color = color;
+    actualColors[1] = color;
     ui.distributionColor2->show();
 
     draw();
@@ -307,7 +308,7 @@ void MainWindow::draw_points(const int activeDistributionNumber, QGraphicsScene 
              distributions[activeDistribution[activeDistributionNumber]].selectionVectorsInfo[i].trueDistribution))
             pen.setColor(QColor(255, 0, 0, 255));
         else
-            pen.setColor(distributions[activeDistribution[activeDistributionNumber]].info.color);
+            pen.setColor(actualColors[activeDistributionNumber]);
 
         scene->addLine(plot_x(distributions[activeDistribution[activeDistributionNumber]].selection(i, activeComponent[0])),
                        plot_y(distributions[activeDistribution[activeDistributionNumber]].selection(i, activeComponent[1])),

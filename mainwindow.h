@@ -11,6 +11,7 @@
 
 class QPainterPath;
 class QGraphicsScene;
+class QColor;
 
 class MainWindow : public QMainWindow
 {
@@ -72,6 +73,7 @@ private:
 
     //active distributions
     int activeDistribution[2];
+    QColor actualColors[2];
 
     //active components of active distributions
     int activeComponent[2];
