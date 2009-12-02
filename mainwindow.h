@@ -41,11 +41,11 @@ private:
     matrix<int> calculate_transformation_matrix();
     void choose_color();
     void draw_axises(QGraphicsScene * scene);
-    void draw_distribution(int activeDistributionNumber, QGraphicsScene * scene);
-    void draw_ellipse(int activeDistributionNumber, QPainterPath &path, double p);
-    void draw_isolines(int activeDistributionNumber, QGraphicsScene * scene);
-    void draw_middle_point(int activeDistributionNumber, QGraphicsScene * scene);
-    void draw_points(int activeDistributionNumber, QGraphicsScene * scene);
+    void draw_distribution(const int activeDistributionNumber, QGraphicsScene * scene);
+    void draw_ellipse(const int activeDistributionNumber, QPainterPath &path, double p);
+    void draw_isolines(const int activeDistributionNumber, QGraphicsScene * scene);
+    void draw_middle_point(const int activeDistributionNumber, QGraphicsScene * scene);
+    void draw_points(const int activeDistributionNumber, QGraphicsScene * scene);
     double plot_x(double x);
     double plot_y(double y);
     void setup_connections();

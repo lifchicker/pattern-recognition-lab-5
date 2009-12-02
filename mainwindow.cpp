@@ -94,9 +94,9 @@ void MainWindow::calculate_values()
 
     setup_active_distributions_and_components();
 
-    //calculate distribution info
-    distributions[activeDistribution[0]].calculate_distribution_info();
-    distributions[activeDistribution[1]].calculate_distribution_info();
+    //calculate info for all distributions
+    for (int i = 0; i < distributions.size(); ++i)
+        distributions[i].calculate_distribution_info();
 
     kxy[0] = distributions[activeDistribution[0]].calculate_correlation_of_components(activeComponent[0], activeComponent[1]);
     kxy[1] = distributions[activeDistribution[1]].calculate_correlation_of_components(activeComponent[0], activeComponent[1]);
@@ -209,19 +209,19 @@ void MainWindow::draw_axises(QGraphicsScene * scene)
 }
 
 //drawing all about (current) distribution
-void MainWindow::draw_distribution(int activeDistributionNumber, QGraphicsScene * scene)
+void MainWindow::draw_distribution(const int activeDistributionNumber, QGraphicsScene * scene)
 {
     if (ui.checkBoxSelection->isChecked())
-        draw_points(activeDistribution[activeDistributionNumber], scene);
+        draw_points(activeDistributionNumber, scene);
 
     if (ui.checkBoxMiddle->isChecked())
-        draw_middle_point(activeDistribution[activeDistributionNumber], scene);
+        draw_middle_point(activeDistributionNumber, scene);
 
     if (ui.checkBoxIsolines->isChecked())
-        draw_isolines(activeDistribution[activeDistributionNumber], scene);
+        draw_isolines(activeDistributionNumber, scene);
 }
 
-void MainWindow::draw_ellipse(int activeDistributionNumber, QPainterPath &path, double p)
+void MainWindow::draw_ellipse(const int activeDistributionNumber, QPainterPath &path, double p)
 {
     const int STEP_OF_GRID = 300;
 
@@ -259,7 +259,7 @@ void MainWindow::draw_ellipse(int activeDistributionNumber, QPainterPath &path, 
     path.connectPath(path);
 }
 
-void MainWindow::draw_isolines(int activeDistributionNumber, QGraphicsScene * scene)
+void MainWindow::draw_isolines(const int activeDistributionNumber, QGraphicsScene * scene)
 {
     QPen pen;
     pen.setColor(QColor(10, 155, 10, 255));
@@ -276,19 +276,19 @@ void MainWindow::draw_isolines(int activeDistributionNumber, QGraphicsScene * sc
     scene->addPath(path3, pen);
 }
 
-void MainWindow::draw_middle_point(int activeDistributionNumber, QGraphicsScene * scene)
+void MainWindow::draw_middle_point(const int activeDistributionNumber, QGraphicsScene * scene)
 {
     QPen pen;
     pen.setColor(QColor(10, 155, 10, 255));
     pen.setWidth(2);
 
-    scene->addLine(plot_x(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].info.middle(0, activeComponent[0])),
-                   plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].info.middle(0, activeComponent[1])),
-                   plot_x(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].info.middle(0, activeComponent[0])),
-                   plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].info.middle(0, activeComponent[1])), pen);
+    scene->addLine(plot_x(distributions[activeDistribution[activeDistributionNumber]].info.middle(0, activeComponent[0])),
+                   plot_y(distributions[activeDistribution[activeDistributionNumber]].info.middle(0, activeComponent[1])),
+                   plot_x(distributions[activeDistribution[activeDistributionNumber]].info.middle(0, activeComponent[0])),
+                   plot_y(distributions[activeDistribution[activeDistributionNumber]].info.middle(0, activeComponent[1])), pen);
 }
 
-void MainWindow::draw_points(int activeDistributionNumber, QGraphicsScene * scene)
+void MainWindow::draw_points(const int activeDistributionNumber, QGraphicsScene * scene)
 {
     if (distributions.isEmpty())
         return;
@@ -309,10 +309,10 @@ void MainWindow::draw_points(int activeDistributionNumber, QGraphicsScene * scen
         else
             pen.setColor(distributions[activeDistribution[activeDistributionNumber]].info.color);
 
-        scene->addLine(plot_x(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection(i, activeComponent[0])),
-                       plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection(i, activeComponent[1])),
-                       plot_x(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection(i, activeComponent[0])),
-                       plot_y(distributions[activeDistribution[activeDistribution[activeDistributionNumber]]].selection(i, activeComponent[1])),
+        scene->addLine(plot_x(distributions[activeDistribution[activeDistributionNumber]].selection(i, activeComponent[0])),
+                       plot_y(distributions[activeDistribution[activeDistributionNumber]].selection(i, activeComponent[1])),
+                       plot_x(distributions[activeDistribution[activeDistributionNumber]].selection(i, activeComponent[0])),
+                       plot_y(distributions[activeDistribution[activeDistributionNumber]].selection(i, activeComponent[1])),
                        pen);
     }
 }
