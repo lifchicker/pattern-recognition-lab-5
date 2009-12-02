@@ -68,7 +68,7 @@ void MainWindow::calculate_middle_risk()
 
     middleRisk /= static_cast<double>(count);
 
-    ui.labelMiddleRisk->setText(QString("%1").arg(middleRisk));
+//    ui.labelMiddleRisk->setText(QString("%1").arg(middleRisk));
 }
 
 matrix<int> MainWindow::calculate_transformation_matrix()
@@ -609,7 +609,7 @@ void MainWindow::setup_connections()
     connect(ui.loadButton, SIGNAL(clicked()), this, SLOT(load()));
 
     //connect button for load regret matrix
-    connect(ui.loadRegretMatrixPushButton, SIGNAL(clicked()), this, SLOT(load_regret_matrix()));
+//    connect(ui.loadRegretMatrixPushButton, SIGNAL(clicked()), this, SLOT(load_regret_matrix()));
 
     //connect button for saving selection
     connect(ui.buttonSaveSelection, SIGNAL(clicked()), this, SLOT(save_selection()));
